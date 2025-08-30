@@ -1,0 +1,109 @@
+/* Desktop-first dashboard styles (clean & safe) */
+:root{
+  --bg:#f3f6fb;
+  --surface:#ffffff;
+  --accent:#0b63ff;
+  --muted:#6b7280;
+  --success:#16a34a;
+  --danger:#ef4444;
+  --radius:12px;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);min-height:100vh;color:#0f1724}
+
+/* Topbar */
+.topbar{
+  height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 28px;
+  background:linear-gradient(90deg, rgba(11,99,255,0.04), transparent);
+  box-shadow: 0 6px 18px rgba(8,18,40,0.04);
+}
+.brand{font-weight:700;font-size:20px}
+.controls{display:flex;gap:12px;align-items:center}
+.btn{padding:8px 12px;border-radius:10px;border:1px solid transparent;background:white;cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid rgba(12,18,34,0.06)}
+.btn.primary{background:linear-gradient(90deg,var(--accent),#0062ff);color:white;border:0}
+
+/* Main layout */
+.container{
+  display:grid;
+  grid-template-columns: 280px 1fr;
+  gap:24px;
+  padding:28px;
+  align-items:start;
+  min-height: calc(100vh - 72px);
+}
+
+/* Sidebar */
+.sidebar{
+  position:sticky;
+  top:28px;
+  height:calc(100vh - 56px);
+  background:var(--surface);
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow: 0 8px 24px rgba(12,18,34,0.04);
+}
+.profile .name{font-weight:700}
+.profile .email{font-size:13px;color:var(--muted)}
+.nav{display:flex;flex-direction:column;margin-top:18px;gap:8px}
+.nav-item{background:transparent;border:0;padding:10px;border-radius:8px;text-align:left;cursor:pointer;font-weight:600;color:var(--muted)}
+.nav-item.active{background:linear-gradient(90deg, rgba(11,99,255,0.08), transparent);color:var(--accent)}
+
+/* Content area */
+.content{display:flex;flex-direction:column;gap:18px}
+.card{background:var(--surface);padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(12,18,34,0.04)}
+.card.small{display:flex;flex-direction:column;gap:12px;padding:18px}
+.acct{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(11,99,255,0.03), transparent)}
+.muted{color:var(--muted);font-size:13px}
+.grid-3{display:flex;gap:12px}
+.action-card{flex:1;padding:16px;border-radius:10px;border:1px dashed rgba(11,99,255,0.06);background:transparent;cursor:pointer;font-weight:700}
+.transactions{max-height:360px;overflow:auto;padding-top:8px}
+.tx{display:flex;justify-content:space-between;padding:10px;border-bottom:1px dashed #eef2ff}
+.tx .meta{font-size:13px;color:var(--muted)}
+
+/* Forms */
+.form-inline{display:flex;gap:12px;align-items:center}
+.form-inline label{display:flex;flex-direction:column;font-size:13px}
+.form-inline input, .form-vertical input, .form-vertical select{padding:10px;border:1px solid #eef2ff;border-radius:8px}
+.form-vertical{display:flex;flex-direction:column;gap:12px}
+
+/* Modal overlay & panel using boolean `hidden` attribute */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8,16,32,0.55);
+  z-index: 2000;
+}
+.modal[hidden] { display: none !important; }
+.modal-panel {
+  background: #fff;
+  width: 460px;
+  max-width: 92%;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 12px 36px rgba(2,6,23,0.24);
+}
+.modal-body { font-size:15px; color:#0f1724; }
+.modal-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:16px; }
+
+/* Toast */
+.toast{
+  position:fixed; right:24px; bottom:24px; padding:12px 16px; border-radius:10px;
+  background:#111; color:white; box-shadow:0 12px 36px rgba(2,6,23,0.4);
+}
+.toast[hidden]{display:none}
+
+/* Responsive */
+@media (max-width:980px){
+  .container{grid-template-columns: 1fr; padding:16px}
+  .sidebar{position:relative;height:auto}
+  .modal-panel{width:92%}
+}

@@ -1,0 +1,85 @@
+/* Desktop-first, premium look for login page */
+:root{
+  --bg:#f4f6fb;
+  --card:#ffffff;
+  --accent:#0b63ff;
+  --muted:#657085;
+  --danger:#d9534f;
+  --radius:12px;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background: linear-gradient(180deg, var(--bg) 0%, #e9eef8 100%);
+  color:#0f1724;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:48px;
+}
+
+/* Card */
+.card{
+  width:880px;
+  max-width:95%;
+  display:grid;
+  grid-template-columns: 1fr 420px;
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow: 0 10px 30px rgba(14,30,50,0.08);
+  overflow:hidden;
+}
+
+.card-header{
+  padding:48px;
+  background:linear-gradient(180deg, rgba(11,99,255,0.08), transparent);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.card-header h1{margin:0;font-size:28px}
+.card-header .muted{color:var(--muted);margin-top:8px;font-size:14px}
+
+/* Right column = form */
+form{
+  padding:48px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+.field{display:flex;flex-direction:column}
+.field label{font-size:13px;color:var(--muted);margin-bottom:8px}
+.field input{
+  padding:12px 14px;
+  border:1px solid #e6eaf2;
+  border-radius:10px;
+  font-size:15px;
+  outline:none;
+}
+.field input:focus{box-shadow:0 6px 18px rgba(11,99,255,0.06);border-color:var(--accent)}
+
+.actions{display:flex;align-items:center;gap:12px;margin-top:6px}
+.btn{padding:10px 16px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+.btn.primary{background:linear-gradient(90deg,var(--accent),#0062ff);color:white;box-shadow:0 8px 20px rgba(11,99,255,0.12)}
+.link{color:var(--accent);text-decoration:none;font-weight:600}
+
+.alert{margin-top:6px;padding:10px;border-radius:8px;border:1px solid transparent;font-size:14px}
+.alert[hidden]{display:none}
+.alert.error{background:#fff3f3;border-color:rgba(217,83,79,0.08);color:var(--danger)}
+
+.error{color:var(--danger);font-size:13px;margin-top:6px;height:16px}
+
+/* Responsive (desktop-first -> scale down) */
+@media (max-width:880px){
+  .card{grid-template-columns: 1fr; width:700px}
+  .card-header{padding:28px}
+  form{padding:28px}
+}
+@media (max-width:480px){
+  body{padding:24px}
+  .card{width:100%}
+  .card-header h1{font-size:22px}
+}

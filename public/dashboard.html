@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BankApp — Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">BankApp</div>
+    <div class="controls">
+      <button id="refreshBtn" class="btn">Refresh</button>
+      <button id="logoutBtn" class="btn ghost">Logout</button>
+    </div>
+  </div>
+
+  <main class="container" id="mainContainer">
+    <aside class="sidebar">
+      <div class="profile">
+        <div id="userName" class="name">—</div>
+        <div id="userEmail" class="email muted">—</div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-tab="overview">Overview</button>
+        <button class="nav-item" data-tab="transactions">Transactions</button>
+        <button class="nav-item" data-tab="actions">Money</button>
+      </nav>
+    </aside>
+
+    <section class="content">
+      <!-- Overview -->
+      <section id="tab-overview" class="tab active">
+        <div class="card small">
+          <h3>Primary account</h3>
+          <div class="acct">
+            <div><div class="muted">Account</div><div id="accNumber">—</div></div>
+            <div><div class="muted">Balance</div><div id="balance">—</div></div>
+          </div>
+          <div class="meta muted" id="createdAt"></div>
+        </div>
+
+        <div class="card">
+          <h3>Quick actions</h3>
+          <div class="grid-3">
+            <button class="action-card" data-action="deposit">Deposit</button>
+            <button class="action-card" data-action="withdraw">Withdraw</button>
+            <button class="action-card" data-action="transfer">Transfer</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Transactions -->
+      <section id="tab-transactions" class="tab">
+        <div class="card">
+          <h3>Transaction history</h3>
+          <div id="transactionsList" class="transactions muted">Loading...</div>
+        </div>
+      </section>
+
+      <!-- Actions -->
+      <section id="tab-actions" class="tab">
+        <div class="card">
+          <h3>Deposit / Withdraw</h3>
+          <form id="cashForm" class="form-inline" onsubmit="return false;">
+            <label>Amount
+              <input id="cashAmount" type="number" min="0.01" step="0.01" placeholder="0.00" />
+            </label>
+            <label>Type
+              <select id="cashType">
+                <option value="deposit">Deposit</option>
+                <option value="withdraw">Withdraw</option>
+              </select>
+            </label>
+            <button id="cashSubmit" class="btn primary" type="button">Submit</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3>Transfer funds</h3>
+          <form id="transferForm" class="form-vertical" onsubmit="return false;">
+            <label>To account ID
+              <input id="toAccountId" type="number" min="1" />
+            </label>
+            <label>Amount
+              <input id="transferAmount" type="number" min="0.01" step="0.01" placeholder="0.00" />
+            </label>
+            <button id="transferSubmit" class="btn primary" type="button">Transfer</button>
+          </form>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <!-- Modal (hidden by default via boolean attribute) -->
+  <div id="modal" class="modal" hidden aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-panel" role="document" aria-labelledby="modalTitle">
+      <div id="modalBody" class="modal-body"></div>
+      <div class="modal-actions">
+        <button id="modalCancel" class="btn ghost" type="button">Cancel</button>
+        <button id="modalConfirm" class="btn primary" type="button">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="dashboard.js" type="module"></script>
+</body>
+</html>

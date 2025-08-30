@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BankApp — Register</title>
+  <link rel="stylesheet" href="register.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <header class="card-header">
+        <h1>Create account</h1>
+        <p class="muted">Quick & secure onboarding — you get a default account automatically</p>
+      </header>
+
+      <form id="registerForm" novalidate>
+        <div class="field">
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text" required />
+          <span class="error" data-for="name"></span>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required />
+          <span class="error" data-for="email"></span>
+        </div>
+
+        <div class="field">
+          <label for="password">Password (min 6 chars)</label>
+          <input id="password" name="password" type="password" required minlength="6" />
+          <span class="error" data-for="password"></span>
+        </div>
+
+        <div class="actions">
+          <button id="submitBtn" class="btn primary" type="submit">Create account</button>
+          <a class="link" href="login.html">Already have an account?</a>
+        </div>
+
+        <div id="formAlert" class="alert" role="status" aria-live="polite" hidden></div>
+      </form>
+    </section>
+  </main>
+
+  <script src="register.js" type="module"></script>
+</body>
+</html>
