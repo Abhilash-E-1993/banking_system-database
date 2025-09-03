@@ -1,6 +1,6 @@
 // login.js — handles login form and redirects to dashboard on success
 // Change this to your backend URL
-const API_BASE = "http://localhost:3000";  
+const API_BASE = " http://localhost:3000";  
 
  // same-origin. Set to 'https://api.example.com' if different.
 const form = document.getElementById('loginForm');

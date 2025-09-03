@@ -3,13 +3,18 @@
 const express = require('express');
 const db = require('./config/db'); // import DB connection
 const session = require('express-session');
+const loanRoutes = require("./routes/loan");
 const cors = require('cors');
+
+const authRoutes = require('./routes/auth');
+const accountRoutes = require('./routes/accounts');
+const insuranceRoutes = require("./routes/insurance");
 const app = express();
 const PORT = 3000;
 
 
-const authRoutes = require('./routes/auth');
-const accountRoutes = require('./routes/accounts');
+
+
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -26,6 +31,15 @@ app.use(session({
 app.use('/api/auth', authRoutes);
 app.use('/api/accounts', accountRoutes);
 
+app.use('/api/loan', loanRoutes);
+app.use("/api/insurance", insuranceRoutes);
+
+
+app.get('/test', (req, res) => {
+  res.send('Testing route works');
+});
+
+
 // Test DB connection
 db.query('SELECT 1')
   .then(() => {
@@ -38,3 +52,6 @@ db.query('SELECT 1')
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}/register.html`);
 });
+
+
+

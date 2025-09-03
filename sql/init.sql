@@ -46,3 +46,32 @@ CREATE TABLE IF NOT EXISTS transactions (
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
+
+-- loans table: stores loan information
+CREATE TABLE loans (
+    loan_id  BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id  BIGINT UNSIGNED NOT NULL,
+    loan_type ENUM('personal', 'home', 'education') NOT NULL,
+    amount DECIMAL(12,2) NOT NULL,
+    interest_rate DECIMAL(5,2) NOT NULL,
+    duration_months INT NOT NULL,
+    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+-- insurance table
+
+CREATE TABLE insurance (
+    insurance_id  BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id  BIGINT UNSIGNED NOT NULL,
+    insurance_type ENUM('life', 'health', 'vehicle') NOT NULL,
+    coverage_amount DECIMAL(12,2) NOT NULL,
+    premium DECIMAL(10,2) NOT NULL,
+    duration_years INT NOT NULL,
+    status ENUM('active', 'expired', 'cancelled') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+ALTER TABLE loans ADD COLUMN status ENUM('pending','approved','rejected') DEFAULT 'pending';
+ALTER TABLE insurance ADD COLUMN status ENUM('pending','approved','rejected') DEFAULT 'pending';

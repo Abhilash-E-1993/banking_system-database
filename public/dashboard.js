@@ -1,7 +1,7 @@
 // dashboard.js — improved, robust, modal-fixed version
 // IMPORTANT: set API_BASE to match your backend origin if different.
 // Example: const API_BASE = "http://localhost:5000";
-const API_BASE = ' http://localhost:3000'; // same-origin by default
+const API_BASE = ' http://localhost:3000 '; // same-origin by default
 
 // Routes (adjust if your backend mounts differently)
 const AUTH_ME = `${API_BASE}/api/auth/me`;
