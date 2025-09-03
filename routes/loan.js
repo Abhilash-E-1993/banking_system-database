@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const pool = require('../config/db'); // your MySQL connection pool
 
-
 // Middleware to check if user is logged in
 function isLoggedIn(req, res, next) {
     if (req.session && req.session.userId) {
@@ -13,10 +12,24 @@ function isLoggedIn(req, res, next) {
 
 // Middleware to check if admin is logged in
 function isAdmin(req, res, next) {
-    if (req.session && req.session.isAdmin) {
-        return next();
+    // You should also check the user's role from the database to be more secure
+    // Let's assume you have a 'users' table with an 'isAdmin' column.
+    const userId = req.session.userId;
+
+    if (!userId) {
+        return res.status(401).json({ message: "Please log in first" });
     }
-    return res.status(403).json({ message: "Access denied, Admins only" });
+
+    const sql = "SELECT isAdmin FROM users WHERE id = ?";
+    pool.query(sql, [userId], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        if (results.length > 0 && results[0].isAdmin) {
+            return next();
+        } else {
+            return res.status(403).json({ message: "Access denied, Admins only" });
+        }
+    });
 }
 
 // User applies for a loan
@@ -47,8 +60,6 @@ router.get("/status", isLoggedIn, (req, res) => {
 });
 
 // Admin: view all loan applications
-
-
 router.get("/admin/all", isAdmin, (req, res) => {
     const sql = `
         SELECT loans.id, users.username, loans.amount, loans.tenure, loans.status
@@ -91,4 +102,3 @@ router.get("/admin/stats", isAdmin, (req, res) => {
 });
 
 module.exports = router;
-
