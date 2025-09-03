@@ -17,14 +17,15 @@ function isAdmin(req, res, next) {
         return res.status(401).json({ message: "Please log in first" });
     }
 
-    const sql = "SELECT isAdmin FROM users WHERE id = ?";
+    // The users table does not have an `isAdmin` column, it has a `role` column.
+    const sql = "SELECT role FROM users WHERE user_id = ?";
     pool.query(sql, [userId], (err, results) => {
         if (err) {
             console.error("Database error:", err); // Log the error for debugging
             return res.status(500).json({ message: "Internal Server Error" });
         }
 
-        if (results.length > 0 && results[0].isAdmin) {
+        if (results.length > 0 && results[0].role === 'admin') {
             return next();
         } else {
             return res.status(403).json({ message: "Access denied, Admins only" });
@@ -36,22 +37,27 @@ function isAdmin(req, res, next) {
 
 // User applies for insurance (with input validation)
 router.post("/apply", isLoggedIn, (req, res) => {
-    const { type, premium, coverage } = req.body;
+    // These variable names must match the keys in the request body from curl/Postman
+    const { insurance_type, premium, coverage_amount, duration_years } = req.body;
     const userId = req.session.userId;
 
     // Validate inputs
-    if (!type || typeof type !== 'string') {
-        return res.status(400).json({ message: "Invalid or missing 'type'" });
+    if (!insurance_type || typeof insurance_type !== 'string') {
+        return res.status(400).json({ message: "Invalid or missing 'insurance_type'" });
     }
     if (isNaN(premium) || premium <= 0) {
         return res.status(400).json({ message: "Invalid 'premium' amount" });
     }
-    if (isNaN(coverage) || coverage <= 0) {
-        return res.status(400).json({ message: "Invalid 'coverage' amount" });
+    if (isNaN(coverage_amount) || coverage_amount <= 0) {
+        return res.status(400).json({ message: "Invalid 'coverage_amount' amount" });
+    }
+    if (isNaN(duration_years) || duration_years <= 0) {
+      return res.status(400).json({ message: "Invalid 'duration_years' value" });
     }
 
-    const sql = "INSERT INTO insurance (user_id, type, premium, coverage, status) VALUES (?, ?, ?, ?, 'pending')";
-    pool.query(sql, [userId, type, premium, coverage], (err, result) => {
+    // The SQL query must use the correct column names from the `insurance` table
+    const sql = "INSERT INTO insurance (user_id, insurance_type, premium, coverage_amount, duration_years, status) VALUES (?, ?, ?, ?, ?, 'pending')";
+    pool.query(sql, [userId, insurance_type, premium, coverage_amount, duration_years], (err, result) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json({ message: "Internal Server Error" });
@@ -64,7 +70,8 @@ router.post("/apply", isLoggedIn, (req, res) => {
 router.get("/status", isLoggedIn, (req, res) => {
     const userId = req.session.userId;
 
-    const sql = "SELECT * FROM insurance WHERE user_id = ?";
+    // The SQL query must select the correct columns
+    const sql = "SELECT insurance_id, insurance_type, premium, coverage_amount, duration_years, status, created_at FROM insurance WHERE user_id = ?";
     pool.query(sql, [userId], (err, results) => {
         if (err) {
             console.error("Database error:", err);
@@ -78,11 +85,12 @@ router.get("/status", isLoggedIn, (req, res) => {
 
 // View all insurance applications
 router.get("/admin/all", isAdmin, (req, res) => {
+    // The SQL query must select the correct columns
     const sql = `
-        SELECT insurance.id, users.username, insurance.type, insurance.premium, insurance.coverage, insurance.status
+        SELECT insurance.insurance_id, users.name, insurance.insurance_type, insurance.premium, insurance.coverage_amount, insurance.status
         FROM insurance
-        JOIN users ON insurance.user_id = users.id
-        ORDER BY insurance.id DESC
+        JOIN users ON insurance.user_id = users.user_id
+        ORDER BY insurance.insurance_id DESC
     `;
     pool.query(sql, (err, results) => {
         if (err) {
@@ -95,13 +103,16 @@ router.get("/admin/all", isAdmin, (req, res) => {
 
 // Approve / Reject insurance
 router.post("/admin/update", isAdmin, (req, res) => {
+    // The request body should use `insurance_id` to match the SQL schema's primary key name.
+    // However, the `curl` command uses `insuranceId`. It's better to stick with a consistent naming convention.
+    // For now, let's assume `req.body` key is `insuranceId` and SQL column is `insurance_id`.
     const { insuranceId, action } = req.body;
 
     if (!insuranceId || !["approved", "rejected"].includes(action)) {
         return res.status(400).json({ message: "Invalid request" });
     }
 
-    const sql = "UPDATE insurance SET status = ? WHERE id = ?";
+    const sql = "UPDATE insurance SET status = ? WHERE insurance_id = ?";
     pool.query(sql, [action, insuranceId], (err, result) => {
         if (err) {
             console.error("Database error:", err);

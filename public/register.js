@@ -1,5 +1,5 @@
 // register.js — register new user and auto-login (session cookie set by server)
-const API_BASE = ' http://localhost:3000'; // same-origin
+const API_BASE = 'http://localhost:3000'; // same-origin
 const form = document.getElementById('registerForm');
 const alertBox = document.getElementById('formAlert');
 

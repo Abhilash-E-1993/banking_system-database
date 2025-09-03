@@ -10,21 +10,23 @@ function isLoggedIn(req, res, next) {
     return res.status(401).json({ message: "Please log in first" });
 }
 
-// Middleware to check if admin is logged in
+// Middleware to check if admin is logged in (Securely checks database)
 function isAdmin(req, res, next) {
-    // You should also check the user's role from the database to be more secure
-    // Let's assume you have a 'users' table with an 'isAdmin' column.
     const userId = req.session.userId;
 
     if (!userId) {
         return res.status(401).json({ message: "Please log in first" });
     }
 
-    const sql = "SELECT isAdmin FROM users WHERE id = ?";
+    // The users table has a `role` column, not `isAdmin`
+    const sql = "SELECT role FROM users WHERE user_id = ?";
     pool.query(sql, [userId], (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
 
-        if (results.length > 0 && results[0].isAdmin) {
+        if (results.length > 0 && results[0].role === 'admin') {
             return next();
         } else {
             return res.status(403).json({ message: "Access denied, Admins only" });
@@ -34,17 +36,24 @@ function isAdmin(req, res, next) {
 
 // User applies for a loan
 router.post("/apply", isLoggedIn, (req, res) => {
-    const { amount, tenure } = req.body;
+    // These variable names must match the keys from the request body
+    const { loan_type, amount, interest_rate, duration_months } = req.body;
     const userId = req.session.userId;
 
-    if (!amount || !tenure) {
-        return res.status(400).json({ message: "Amount and tenure required" });
+    if (!loan_type || !amount || !interest_rate || !duration_months) {
+        return res.status(400).json({ message: "All loan details are required" });
     }
-
-    const sql = "INSERT INTO loans (user_id, amount, tenure, status) VALUES (?, ?, ?, 'pending')";
-    pool.query(sql, [userId, amount, tenure], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Loan application submitted", loanId: result.insertId });
+       console.log("Starting database query...");
+    // The SQL query must use the correct column names from the `loans` table
+    const sql = "INSERT INTO loans (user_id, loan_type, amount, interest_rate, duration_months, status) VALUES (?, ?, ?, ?, ?, 'pending')";
+    pool.query(sql, [userId, loan_type, amount, interest_rate, duration_months], (err, result) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+         console.log("Database query successful, sending response...");
+        res.json({ message: "Loan application submitted", loan_id: result.insertId });
+         console.log("done");
     });
 });
 
@@ -52,38 +61,54 @@ router.post("/apply", isLoggedIn, (req, res) => {
 router.get("/status", isLoggedIn, (req, res) => {
     const userId = req.session.userId;
 
-    const sql = "SELECT * FROM loans WHERE user_id = ?";
+    // The SQL query must select the correct columns
+    const sql = "SELECT loan_id, loan_type, amount, interest_rate, duration_months, status, created_at FROM loans WHERE user_id = ?";
     pool.query(sql, [userId], (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
         res.json(results);
     });
 });
 
 // Admin: view all loan applications
 router.get("/admin/all", isAdmin, (req, res) => {
+    // The SQL query must select the correct columns and join on `user_id`
     const sql = `
-        SELECT loans.id, users.username, loans.amount, loans.tenure, loans.status
+        SELECT loans.loan_id, users.name, loans.loan_type, loans.amount, loans.duration_months, loans.status
         FROM loans
-        JOIN users ON loans.user_id = users.id
-        ORDER BY loans.id DESC
+        JOIN users ON loans.user_id = users.user_id
+        ORDER BY loans.loan_id DESC
     `;
     pool.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
         res.json(results);
     });
 });
 
 // Admin: approve/reject a loan
 router.post("/admin/update", isAdmin, (req, res) => {
+    // The request body should use `loan_id` to match the SQL schema's primary key name.
     const { loanId, action } = req.body; // action = "approved" / "rejected"
 
     if (!loanId || !["approved", "rejected"].includes(action)) {
         return res.status(400).json({ message: "Invalid request" });
     }
 
-    const sql = "UPDATE loans SET status = ? WHERE id = ?";
+    // The SQL query must update using `loan_id`
+    const sql = "UPDATE loans SET status = ? WHERE loan_id = ?";
     pool.query(sql, [action, loanId], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Loan application not found" });
+        }
         res.json({ message: `Loan ${action}`, loanId });
     });
 });
@@ -96,7 +121,10 @@ router.get("/admin/stats", isAdmin, (req, res) => {
         GROUP BY status
     `;
     pool.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
         res.json(results);
     });
 });
