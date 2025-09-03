@@ -20,9 +20,9 @@ async function run() {
     await conn.beginTransaction();
 
     // Admin user
-    const adminName = 'Admin User';
-    const adminEmail = 'admin@example.com';
-    const adminPasswordPlain = 'dbmsproject'; // change after seeding
+    const adminName = 'Admin';
+    const adminEmail = 'admin@gmail.com';
+    const adminPasswordPlain = '123456'; // change after seeding
     const adminHash = await bcrypt.hash(adminPasswordPlain, 10);
     const [r1] = await conn.query(
       'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
