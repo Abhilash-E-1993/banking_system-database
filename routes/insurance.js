@@ -36,10 +36,10 @@ async function isAdmin(req, res, next) {
 
 // User applies for insurance (with input validation)
 router.post("/apply", isLoggedIn, async (req, res) => {
-    const { insurance_type, premium, coverage_amount, duration_years } = req.body;
+    const { insurance_type, premium, coverage_amount, duration_years, age, smoker } = req.body;
     const userId = req.session.userId;
 
-    if (!insurance_type || typeof insurance_type !== 'string') {
+    if (!insurance_type || !['life', 'health', 'vehicle'].includes(insurance_type)) {
         return res.status(400).json({ message: "Invalid or missing 'insurance_type'" });
     }
     if (isNaN(premium) || premium <= 0) {
@@ -51,10 +51,17 @@ router.post("/apply", isLoggedIn, async (req, res) => {
     if (isNaN(duration_years) || duration_years <= 0) {
         return res.status(400).json({ message: "Invalid 'duration_years' value" });
     }
+    if (isNaN(age) || age < 18 || age > 100) {
+        return res.status(400).json({ message: "Invalid 'age' value" });
+    }
+    if (typeof smoker !== 'boolean') {
+        return res.status(400).json({ message: "Invalid 'smoker' value" });
+    }
+
 
     try {
-        const sql = "INSERT INTO insurance (user_id, insurance_type, premium, coverage_amount, duration_years, status) VALUES (?, ?, ?, ?, ?, 'pending')";
-        const [result] = await pool.query(sql, [userId, insurance_type, premium, coverage_amount, duration_years]);
+        const sql = "INSERT INTO insurance (user_id, insurance_type, premium, coverage_amount, duration_years, age, smoker, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')";
+        const [result] = await pool.query(sql, [userId, insurance_type, premium, coverage_amount, duration_years, age, smoker]);
         
         res.status(201).json({ message: "Insurance application submitted", insuranceId: result.insertId });
     } catch (err) {
@@ -98,7 +105,7 @@ router.get("/admin/all", isAdmin, async (req, res) => {
     }
 });
 
-// Approve / Reject insurance
+// Approve / Reject insurance with transaction
 router.post("/admin/update", isAdmin, async (req, res) => {
     const { insuranceId, action } = req.body;
 
@@ -106,17 +113,69 @@ router.post("/admin/update", isAdmin, async (req, res) => {
         return res.status(400).json({ message: "Invalid request" });
     }
 
-    try {
-        const sql = "UPDATE insurance SET status = ? WHERE insurance_id = ?";
-        const [result] = await pool.query(sql, [action, insuranceId]);
+    const connection = await pool.getConnection();
 
-        if (result.affectedRows === 0) {
+    try {
+        await connection.beginTransaction();
+
+        // 1. Get insurance details and lock the row
+        const [insuranceDetails] = await connection.query("SELECT * FROM insurance WHERE insurance_id = ? FOR UPDATE", [insuranceId]);
+        if (insuranceDetails.length === 0) {
+            await connection.rollback();
             return res.status(404).json({ message: "Insurance application not found" });
         }
+        const insurance = insuranceDetails[0];
+
+        // Prevent double processing
+        if (insurance.status !== 'pending') {
+            await connection.rollback();
+            return res.status(409).json({ message: `Insurance is already ${insurance.status}` });
+        }
+
+        if (action === "approved") {
+            const premium = parseFloat(insurance.premium);
+            const userId = insurance.user_id;
+
+            // 2. Get user's account details
+            const [accountDetails] = await connection.query("SELECT account_id, account_number, balance FROM accounts WHERE user_id = ? FOR UPDATE", [userId]);
+            if (accountDetails.length === 0) {
+                await connection.rollback();
+                return res.status(404).json({ message: "User account not found" });
+            }
+            const account = accountDetails[0];
+            
+            // 3. Check for sufficient balance
+            if (account.balance < premium) {
+                await connection.rollback();
+                return res.status(400).json({ message: "Insufficient funds to pay first premium." });
+            }
+
+            // 4. Debit the user's account
+            await connection.query("UPDATE accounts SET balance = balance - ? WHERE account_id = ?", [premium, account.account_id]);
+
+            // 5. Record the insurance premium transaction
+            const transactionSql = "INSERT INTO transactions (account_id, from_account, to_account, amount, type) VALUES (?, ?, ?, ?, 'insurance_premium')";
+            await connection.query(transactionSql, [account.account_id, account.account_number, 'Bank', premium]);
+
+            // 6. Update insurance status
+          // ...
+await connection.query("UPDATE insurance SET status = 'approved' WHERE insurance_id = ?", [insuranceId]);
+// ...
+
+        } else if (action === "rejected") {
+            // Only update status for rejection
+            await connection.query("UPDATE insurance SET status = 'rejected' WHERE insurance_id = ?", [insuranceId]);
+        }
+
+        await connection.commit();
         res.json({ message: `Insurance ${action}`, insuranceId });
+
     } catch (err) {
+        await connection.rollback();
         console.error("Database error in /admin/update:", err);
         return res.status(500).json({ message: "Internal Server Error" });
+    } finally {
+        connection.release();
     }
 });
 

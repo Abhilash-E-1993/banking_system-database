@@ -62,12 +62,14 @@ CREATE TABLE loans (
 
 -- insurance table
 CREATE TABLE insurance (
-    insurance_id  BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_id  BIGINT UNSIGNED NOT NULL,
+    insurance_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
     insurance_type ENUM('life', 'health', 'vehicle') NOT NULL,
     coverage_amount DECIMAL(12,2) NOT NULL,
     premium DECIMAL(10,2) NOT NULL,
     duration_years INT NOT NULL,
+    age INT NOT NULL,
+    smoker BOOLEAN NOT NULL,
     status ENUM('pending', 'active', 'expired', 'cancelled') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE

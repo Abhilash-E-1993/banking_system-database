@@ -3,10 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Banking Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>State-of-the-Art Banking Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* CSS remains the same as your original file for a consistent look. */
+        :root {
+            /* Core Colors */
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary: #f1f5f9;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            
+            /* Neutral Colors */
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            
+            /* Text */
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            --text-muted: var(--gray-500);
+            
+            /* Background */
+            --bg-primary: #ffffff;
+            --bg-secondary: var(--gray-50);
+            --bg-tertiary: var(--gray-100);
+            
+            /* Borders */
+            --border-light: var(--gray-200);
+            --border-medium: var(--gray-300);
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            
+            /* Radius */
+            --radius-xs: 4px;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 20px;
+            
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+            --space-3xl: 64px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,83 +76,102 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--gray-100) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             min-height: 100vh;
-            color: #333;
         }
 
         .dashboard-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: var(--space-xl) var(--space-lg);
         }
 
+        /* Header */
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 25px 35px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: var(--bg-primary);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-2xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
         }
 
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .user-info {
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 20px;
         }
 
-        .welcome-text {
-            font-size: 1.1rem;
-            color: #666;
+        .brand-section h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .account-info {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         .logout-btn {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            background: linear-gradient(135deg, var(--error), #dc2626);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-lg);
             font-weight: 600;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-md);
+            font-size: 0.875rem;
         }
 
         .logout-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(238, 90, 82, 0.4);
+            box-shadow: var(--shadow-lg);
         }
 
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, #2196F3, #21CBF3);
-            border-radius: 20px;
-            padding: 35px;
+        /* Balance Card */
+        .balance-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-2xl);
+            margin-bottom: var(--space-2xl);
             color: white;
-            box-shadow: 0 15px 35px rgba(33, 150, 243, 0.3);
+            box-shadow: var(--shadow-xl);
             position: relative;
             overflow: hidden;
         }
 
-        .balance-card::before {
+        .balance-section::before {
             content: '';
             position: absolute;
             top: -50%;
@@ -99,167 +179,177 @@
             width: 200%;
             height: 200%;
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: float 6s ease-in-out infinite;
+            animation: float 12s ease-in-out infinite;
         }
 
         @keyframes float {
             0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-20px, -20px) rotate(10deg); }
+            33% { transform: translate(-20px, -20px) rotate(5deg); }
+            66% { transform: translate(20px, -15px) rotate(-5deg); }
         }
 
-        .balance-title {
-            font-size: 1.2rem;
+        .balance-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .balance-info .balance-title {
+            font-size: 0.875rem;
             opacity: 0.9;
-            margin-bottom: 10px;
+            margin-bottom: var(--space-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 500;
         }
 
         .balance-amount {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .account-number {
-            font-size: 0.9rem;
-            opacity: 0.8;
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            display: flex;
+            gap: var(--space-md);
         }
 
-        .action-btn {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: none;
-            border-radius: 15px;
-            padding: 20px;
+        .quick-action-btn {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: var(--space-md);
+            border-radius: var(--radius-lg);
             cursor: pointer;
             transition: all 0.3s ease;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
         }
 
-        .action-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(31, 38, 135, 0.5);
+        .quick-action-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
         }
 
-        .action-btn i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: #667eea;
-        }
-
-        .action-btn span {
-            display: block;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .services-grid {
+        /* Main Grid */
+        .main-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-xl);
+            margin-bottom: var(--space-2xl);
         }
 
+        /* Service Cards */
         .service-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            transition: all 0.3s ease;
+            background: var(--bg-primary);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(31, 38, 135, 0.5);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary);
         }
 
         .service-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
+            text-align: center;
+            margin-bottom: var(--space-xl);
         }
 
         .service-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-xl);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
+            margin: 0 auto var(--space-md);
             font-size: 1.5rem;
             color: white;
+            box-shadow: var(--shadow-md);
         }
 
-        .deposit-icon { background: linear-gradient(135deg, #4CAF50, #45a049); }
-        .withdraw-icon { background: linear-gradient(135deg, #f44336, #d32f2f); }
-        .transfer-icon { background: linear-gradient(135deg, #2196F3, #1976d2); }
-        .loan-icon { background: linear-gradient(135deg, #ff9800, #f57c00); }
-        .insurance-icon { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
-        .history-icon { background: linear-gradient(135deg, #3f51b5, #303f9f); }
+        .deposit-icon { background: linear-gradient(135deg, var(--success), #059669); }
+        .withdraw-icon { background: linear-gradient(135deg, var(--error), #dc2626); }
+        .transfer-icon { background: linear-gradient(135deg, var(--accent), #0891b2); }
 
         .service-title {
-            font-size: 1.4rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            color: #333;
+            color: var(--text-primary);
         }
 
+        /* Forms */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: var(--space-lg);
+            position: relative;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: var(--space-sm);
             font-weight: 600;
-            color: #555;
+            color: var(--text-primary);
+            font-size: 0.875rem;
         }
 
-        .form-group input, .form-group select, .form-group textarea {
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1rem;
+            padding: var(--space-md);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            font-size: 0.875rem;
+            font-family: inherit;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.8);
-        }
-        
-        .form-group input:disabled, .form-group select:disabled {
-            background-color: #f0f0f0;
-            cursor: not-allowed;
         }
 
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 40px;
         }
 
         .submit-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 1rem;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-lg);
+            font-size: 0.875rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            width: 100%;
+            box-shadow: var(--shadow-md);
         }
 
-        .submit-btn:hover {
+        .submit-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: var(--shadow-lg);
         }
 
         .submit-btn:disabled {
@@ -268,40 +358,261 @@
             transform: none;
         }
 
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 10px;
-            color: white;
-            font-weight: 600;
-            z-index: 1000;
-            transform: translateX(400px);
+        /* Application Cards */
+        .application-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-xl);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .application-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
             transition: all 0.3s ease;
         }
 
-        .notification.show {
-            transform: translateX(0);
+        .application-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
         }
 
-        .notification.success {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
+        .application-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 2px solid var(--border-light);
         }
 
-        .notification.error {
-            background: linear-gradient(135deg, #f44336, #d32f2f);
+        .application-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: var(--shadow-md);
         }
 
+        .loan-icon { background: linear-gradient(135deg, var(--warning), #d97706); }
+        .insurance-icon { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+        .application-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Status Grid */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-xl);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .status-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .status-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .status-table th {
+            text-align: left;
+            padding: var(--space-md) 0;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.75rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .status-table td {
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-badge.approved,
+        .status-badge.active {
+            background: rgb(16 185 129 / 0.1);
+            color: var(--success);
+        }
+
+        .status-badge.pending {
+            background: rgb(245 158 11 / 0.1);
+            color: var(--warning);
+        }
+
+        .status-badge.declined {
+            background: rgb(239 68 68 / 0.1);
+            color: var(--error);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-2xl);
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Transaction History */
+        .transaction-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+        }
+
+        .transaction-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .history-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .transaction-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-lg);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .transaction-item:hover {
+            background: var(--bg-tertiary);
+            transform: translateY(-1px);
+        }
+
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .transaction-type-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        .deposit-tx { background: var(--success); }
+        .withdraw-tx { background: var(--error); }
+        .transfer-tx { background: var(--accent); }
+        .loan-tx { background: var(--warning); }
+        .insurance-tx { background: #8b5cf6; }
+
+        .transaction-details h4 {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .transaction-details p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .transaction-amount.credit {
+            color: var(--success);
+        }
+
+        .transaction-amount.debit {
+            color: var(--error);
+        }
+
+        /* Loading */
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-right: 10px;
+            margin-right: var(--space-sm);
         }
 
         @keyframes spin {
@@ -309,177 +620,188 @@
             100% { transform: rotate(360deg); }
         }
 
-        .transaction-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            font-size: 0.9rem;
-        }
-
-        .transaction-table th, .transaction-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .transaction-table th {
-            font-weight: 700;
-            background-color: #f4f4f4;
-            color: #555;
-        }
-
-        .transaction-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .transaction-table .transaction-type.deposit {
-            color: #4CAF50;
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: var(--space-lg);
+            right: var(--space-lg);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-light);
             font-weight: 600;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            z-index: 1000;
         }
 
-        .transaction-table .transaction-type.withdraw,
-        .transaction-table .transaction-type.transfer {
-            color: #f44336;
-            font-weight: 600;
+        .notification.show {
+            transform: translateX(0);
         }
-        .credit {
-            color: #4CAF50 !important;
-            font-weight: bold !important;
+
+        .notification.success {
+            border-left: 4px solid var(--success);
         }
-        .debit {
-            color: #f44336 !important;
-            font-weight: bold !important;
+
+        .notification.error {
+            border-left: 4px solid var(--error);
         }
-        
-        @media (max-width: 768px) {
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
             .main-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .quick-actions {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .services-grid {
+
+            .application-grid,
+            .status-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .header h1 {
-                font-size: 2rem;
+
+            .balance-content {
+                flex-direction: column;
+                gap: var(--space-lg);
+                text-align: center;
             }
-            
+
+            .quick-actions {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: var(--space-lg);
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: var(--space-lg);
+                text-align: center;
+            }
+
+            .user-section {
+                width: 100%;
+                justify-content: space-between;
+            }
+
             .balance-amount {
                 font-size: 2.5rem;
+            }
+
+            .quick-actions {
+                flex-wrap: wrap;
+            }
+
+            .transaction-item {
+                flex-direction: column;
+                gap: var(--space-md);
+                text-align: center;
             }
         }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
-        <div class="header">
-            <h1>Premium Banking</h1>
-            <div class="user-info">
-                <div class="welcome-text">
-                    Welcome back, <span id="userName">John Doe</span>
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="brand-section">
+                    <h1>Premium Banking</h1>
                 </div>
-                <button class="logout-btn" onclick="logout()">Logout</button>
+                <div class="user-section">
+                    <div class="user-info">
+                        <div class="user-name">Welcome, <span id="userName">John Doe</span></div>
+                        <div class="account-info">Account: <span id="accountNumber">****-****-1234</span></div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
             </div>
-        </div>
+        </header>
 
+        <!-- Balance Section -->
+        <section class="balance-section">
+            <div class="balance-content">
+                <div class="balance-info">
+                    <div class="balance-title">Available Balance</div>
+                    <div class="balance-amount" id="accountBalance">$0.00</div>
+                </div>
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="scrollToSection('deposit-card')">💰 Deposit</button>
+                    <button class="quick-action-btn" onclick="scrollToSection('withdraw-card')">💸 Withdraw</button>
+                    <button class="quick-action-btn" onclick="scrollToSection('transfer-card')">🔄 Transfer</button>
+                    <button class="quick-action-btn" onclick="refreshBalance()">🔁 Refresh</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
         <div class="main-grid">
-            <div class="balance-card">
-                <div class="balance-title">Available Balance</div>
-                <div class="balance-amount" id="accountBalance">$0.00</div>
-                <div class="account-number">Account: <span id="accountNumber">****-****-1234</span></div>
-            </div>
-
-            <div class="quick-actions">
-                <button class="action-btn" onclick="scrollToSection('deposit')">
-                    <i>💰</i>
-                    <span>Deposit</span>
-                </button>
-                <button class="action-btn" onclick="scrollToSection('withdraw')">
-                    <i>💸</i>
-                    <span>Withdraw</span>
-                </button>
-                <button class="action-btn" onclick="scrollToSection('transfer')">
-                    <i>🔄</i>
-                    <span>Transfer</span>
-                </button>
-                <button class="action-btn" onclick="refreshBalance()">
-                    <i>🔁</i>
-                    <span>Refresh</span>
-                </button>
-            </div>
-        </div>
-
-        <div class="services-grid">
-            <div class="service-card" id="deposit">
+            <div class="service-card" id="deposit-card">
                 <div class="service-header">
                     <div class="service-icon deposit-icon">💰</div>
                     <div class="service-title">Deposit Funds</div>
                 </div>
                 <form id="depositForm" onsubmit="handleDeposit(event)">
                     <div class="form-group">
-                        <label for="depositAmount">Enter Amount ($)</label>
-                        <input type="number" id="depositAmount" name="amount" step="0.01" min="1" required>
+                        <label for="depositAmount">Amount</label>
+                        <input type="number" id="depositAmount" name="amount" step="0.01" min="1" placeholder="Enter amount to deposit" required>
                     </div>
-                    <button type="submit" class="submit-btn" id="depositBtn">
-                        Deposit
-                    </button>
+                    <button type="submit" class="submit-btn" id="depositBtn">Deposit Funds</button>
                 </form>
             </div>
 
-            <div class="service-card" id="withdraw">
+            <div class="service-card" id="withdraw-card">
                 <div class="service-header">
                     <div class="service-icon withdraw-icon">💸</div>
                     <div class="service-title">Withdraw Funds</div>
                 </div>
                 <form id="withdrawForm" onsubmit="handleWithdraw(event)">
                     <div class="form-group">
-                        <label for="withdrawAmount">Amount ($)</label>
-                        <input type="number" id="withdrawAmount" name="amount" step="0.01" min="1" required>
+                        <label for="withdrawAmount">Amount</label>
+                        <input type="number" id="withdrawAmount" name="amount" step="0.01" min="1" placeholder="Enter amount to withdraw" required>
                     </div>
-                    <button type="submit" class="submit-btn" id="withdrawBtn">
-                        Withdraw
-                    </button>
+                    <button type="submit" class="submit-btn" id="withdrawBtn">Withdraw Funds</button>
                 </form>
             </div>
 
-            <div class="service-card" id="transfer">
+            <div class="service-card" id="transfer-card">
                 <div class="service-header">
                     <div class="service-icon transfer-icon">🔄</div>
                     <div class="service-title">Transfer Money</div>
                 </div>
                 <form id="transferForm" onsubmit="handleTransfer(event)">
                     <div class="form-group">
-                        <label for="transferAmount">Amount ($)</label>
-                        <input type="number" id="transferAmount" name="amount" step="0.01" min="1" required>
+                        <label for="transferAmount">Amount</label>
+                        <input type="number" id="transferAmount" name="amount" step="0.01" min="1" placeholder="Enter transfer amount" required>
                     </div>
                     <div class="form-group">
-                        <label for="recipientAccount">Account ID</label>
+                        <label for="recipientAccount">Recipient Account ID</label>
                         <input type="text" id="recipientAccount" name="account_id" placeholder="Enter recipient account ID" required>
                     </div>
-                    <button type="submit" class="submit-btn" id="transferBtn">
-                        Transfer
-                    </button>
+                    <button type="submit" class="submit-btn" id="transferBtn">Transfer Money</button>
                 </form>
             </div>
+        </div>
 
-            <div class="service-card" id="loan">
-                <div class="service-header">
-                    <div class="service-icon loan-icon">🏠</div>
-                    <div class="service-title">Apply for Loan</div>
+        <!-- Applications -->
+        <div class="application-grid">
+            <div class="application-card">
+                <div class="application-header">
+                    <div class="application-icon loan-icon">🏠</div>
+                    <div class="application-title">Apply for Loan</div>
                 </div>
                 <form id="loanForm" onsubmit="handleLoanApplication(event)">
                     <div class="form-group">
-                        <label for="loanAmount">Amount ($)</label>
-                        <input type="number" id="loanAmount" name="amount" step="1000" min="1000" required>
+                        <label for="loanAmount">Loan Amount</label>
+                        <input type="number" id="loanAmount" name="amount" step="1000" min="1000" placeholder="Minimum $1,000" required>
                     </div>
                     <div class="form-group">
                         <label for="loanType">Loan Type</label>
                         <select id="loanType" name="loan_type" required>
-                            <option value="">Select a loan type</option>
+                            <option value="">Select loan type</option>
                             <option value="personal">Personal Loan</option>
                             <option value="home">Home Loan</option>
                             <option value="education">Education Loan</option>
@@ -491,71 +813,70 @@
                     </div>
                     <div class="form-group">
                         <label for="loanDuration">Duration (months)</label>
-                        <input type="number" id="loanDuration" name="duration_months" step="1" min="1" required>
+                        <input type="number" id="loanDuration" name="duration_months" step="1" min="1" placeholder="e.g., 24, 36, 60" required>
                     </div>
-                    <button type="submit" class="submit-btn" id="loanBtn">
-                        Apply for Loan
-                    </button>
+                    <button type="submit" class="submit-btn" id="loanBtn">Submit Application</button>
                 </form>
             </div>
 
-            <div class="service-card" id="insurance">
-                <div class="service-header">
-                    <div class="service-icon insurance-icon">🛡️</div>
-                    <div class="service-title">Apply for Insurance</div>
+            <div class="application-card">
+                <div class="application-header">
+                    <div class="application-icon insurance-icon">🛡️</div>
+                    <div class="application-title">Apply for Insurance</div>
                 </div>
                 <form id="insuranceForm" onsubmit="handleInsuranceApplication(event)">
                     <div class="form-group">
                         <label for="insuranceType">Insurance Type</label>
                         <select id="insuranceType" name="insurance_type" required>
-                            <option value="">Select a type</option>
-                            <option value="life">Life</option>
-                            <option value="health">Health</option>
-                            <option value="vehicle">Vehicle</option>
+                            <option value="">Select insurance type</option>
+                            <option value="life">Life Insurance</option>
+                            <option value="health">Health Insurance</option>
+                            <option value="vehicle">Vehicle Insurance</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="age">Age</label>
-                        <input type="number" id="age" name="age" min="18" max="100" required>
+                        <label for="age">Your Age</label>
+                        <input type="number" id="age" name="age" min="18" max="100" placeholder="Enter your age" required>
                     </div>
                     <div class="form-group">
-                        <label for="smoker">Smoker?</label>
+                        <label for="smoker">Smoking Status</label>
                         <select id="smoker" name="smoker" required>
-                            <option value="">Select</option>
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
+                            <option value="">Select smoking status</option>
+                            <option value="1">Yes, I smoke</option>
+                            <option value="0">No, I don't smoke</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="coverageAmount">Coverage Amount ($)</label>
-                        <input type="number" id="coverageAmount" name="coverage_amount" step="1000" min="1000" required>
+                        <label for="coverageAmount">Coverage Amount</label>
+                        <input type="number" id="coverageAmount" name="coverage_amount" step="1000" min="1000" placeholder="Minimum $1,000" required>
                     </div>
                     <div class="form-group">
-                        <label for="premiumAmount">Calculated Premium ($)</label>
-                        <input type="text" id="premiumAmount" name="premium" readonly>
+                        <label for="premiumAmount">Calculated Premium (Annual)</label>
+                        <input type="text" id="premiumAmount" name="premium" readonly placeholder="Premium will be calculated">
                         <input type="hidden" id="hiddenPremium" name="premium_hidden">
                     </div>
                     <div class="form-group">
-                        <label for="insuranceDuration">Duration (years)</label>
-                        <input type="number" id="insuranceDuration" name="duration_years" step="1" min="1" required>
+                        <label for="insuranceDuration">Policy Duration (years)</label>
+                        <input type="number" id="insuranceDuration" name="duration_years" step="1" min="1" placeholder="e.g., 5, 10, 20" required>
                     </div>
-                    <button type="submit" class="submit-btn" id="insuranceBtn">
-                        Apply for Insurance
-                    </button>
+                    <button type="submit" class="submit-btn" id="insuranceBtn">Submit Application</button>
                 </form>
             </div>
+        </div>
 
-            <div class="service-card" id="loan-status">
-                <div class="service-header">
-                    <div class="service-icon loan-icon">🏠</div>
-                    <div class="service-title">My Loans</div>
+        <!-- Status Cards -->
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="status-header">
+                    <div class="application-icon loan-icon">🏠</div>
+                    <div class="status-title">My Loans</div>
                 </div>
                 <div id="loanStatusContainer">
-                    <p id="noLoansMessage" style="text-align: center; color: #999;">No active loan applications found.</p>
-                    <table class="transaction-table" id="loanStatusTable" style="display: none; width: 100%; border-collapse: collapse; text-align: center;">
+                    <div id="noLoansMessage" class="empty-state">No active loan applications found.</div>
+                    <table class="status-table" id="loanStatusTable" style="display: none;">
                         <thead>
                             <tr>
-                                <th>Loan Type</th>
+                                <th>Type</th>
                                 <th>Amount</th>
                                 <th>Status</th>
                                 <th>Monthly EMI</th>
@@ -566,19 +887,19 @@
                 </div>
             </div>
 
-            <div class="service-card" id="insurance-status">
-                <div class="service-header">
-                    <div class="service-icon insurance-icon">🛡️</div>
-                    <div class="service-title">My Insurance</div>
+            <div class="status-card">
+                <div class="status-header">
+                    <div class="application-icon insurance-icon">🛡️</div>
+                    <div class="status-title">My Insurance</div>
                 </div>
                 <div id="insuranceStatusContainer">
-                    <p id="noInsuranceMessage" style="text-align: center; color: #999;">No active insurance policies found.</p>
-                    <table class="transaction-table" id="insuranceStatusTable" style="display: none; width: 100%; border-collapse: collapse; text-align: center;">
+                    <div id="noInsuranceMessage" class="empty-state">No active insurance policies found.</div>
+                    <table class="status-table" id="insuranceStatusTable" style="display: none;">
                         <thead>
                             <tr>
                                 <th>Type</th>
                                 <th>Coverage</th>
-                                <th>Premium</th>
+                                <th>Annual Premium</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -586,604 +907,515 @@
                     </table>
                 </div>
             </div>
+        </div>
 
-            <div class="service-card" id="transaction-history">
-                <div class="service-header">
-                    <div class="service-icon history-icon">📜</div>
-                    <div class="service-title">Transaction History</div>
-                </div>
-                <h3 style="text-align: center; margin: 10px 0; color: #333;">Transaction History</h3>
-                <div class="transaction-history-container">
-                    <p id="noTransactionsMessage" style="text-align: center; color: #999;">No transactions found.</p>
-                    <table class="transaction-table" id="transactionsTable" style="display: none; width: 100%; border-collapse: collapse; text-align: center;">
-                        <thead>
-                            <tr>
-                                <th>From → To</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionList"></tbody>
-                    </table>
-                </div>
+        <!-- Transaction History -->
+        <div class="transaction-card">
+            <div class="transaction-header">
+                <div class="history-icon">📊</div>
+                <div class="transaction-title">Recent Transactions</div>
+            </div>
+            <div class="transaction-list" id="transactionList">
+                <div id="noTransactionsMessage" class="empty-state">No transactions found.</div>
             </div>
         </div>
-        <div id="notification" class="notification"></div>
-        <script>
-            let userAccountId = null;
-            let userAccountNumber = null;
+    </div>
 
-            // ================================
-            // BACKEND INTEGRATION SECTION
-            // ================================
-            const API_BASE_URL = 'http://localhost:3000';
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
 
-            const AUTH_ME = `${API_BASE_URL}/api/auth/me`;
-            const AUTH_LOGOUT = `${API_BASE_URL}/api/auth/logout`;
-            const ACCOUNTS_BASE = `${API_BASE_URL}/api/accounts`;
-            const LOANS_BASE = `${API_BASE_URL}/api/loan`;
-            const INSURANCE_BASE = `${API_BASE_URL}/api/insurance`;
-            const TRANSACTIONS_BASE = `${API_BASE_URL}/api/transactions`;
+    <script>
+        let userAccountId = null;
+        let userAccountNumber = null;
 
-            /**
-             * A session-aware fetch wrapper that handles authentication.
-             * @param {string} endpoint The API endpoint to call.
-             * @param {object} opts Fetch options, including method, headers, and body.
-             * @returns {Promise<Response>} The fetch response object.
-             */
-            async function requireAuthFetch(endpoint, opts = {}) {
-                console.log(`Fetching from: ${API_BASE_URL}${endpoint}`);
-                opts.credentials = 'include';
-                opts.headers = opts.headers || {};
+        const API_BASE_URL = 'http://localhost:3000';
 
-                if (opts.body && typeof opts.body === 'object' && !(opts.body instanceof FormData)) {
-                    opts.headers['Content-Type'] = 'application/json';
-                    opts.body = JSON.stringify(opts.body);
-                }
-
-                const res = await fetch(`${API_BASE_URL}${endpoint}`, opts);
-
-                if (res.status === 401) {
-                    window.location.href = 'login.html';
-                    throw new Error('Unauthorized');
-                }
-
-                return res;
+        async function requireAuthFetch(endpoint, opts = {}) {
+            console.log(`Fetching from: ${API_BASE_URL}${endpoint}`);
+            opts.credentials = 'include';
+            opts.headers = opts.headers || {};
+            if (opts.body && typeof opts.body === 'object' && !(opts.body instanceof FormData)) {
+                opts.headers['Content-Type'] = 'application/json';
+                opts.body = JSON.stringify(opts.body);
             }
+            const res = await fetch(`${API_BASE_URL}${endpoint}`, opts);
+            if (res.status === 401) {
+                window.location.href = 'login.html';
+                throw new Error('Unauthorized');
+            }
+            return res;
+        }
 
-            // ================================
-            // INITIALIZATION
-            // ================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadUserData();
+            await loadAccountBalance();
+            await loadTransactionHistory();
+            await loadLoanStatus();
+            await loadInsuranceStatus();
+            wireLoanForm();
+            wireInsuranceForm();
+        });
 
-            document.addEventListener('DOMContentLoaded', async function() {
-                await loadUserData();
+        async function loadUserData() {
+            try {
+                const res = await requireAuthFetch('/api/auth/me');
+                const data = await res.json();
+                console.log('Account object:', data);
+                userAccountId = data.account?.account_id;
+                userAccountNumber = data.account?.account_number;
+                document.getElementById('userName').textContent = data.user?.name || 'User';
+                document.getElementById('accountNumber').textContent = userAccountNumber || '****-****-1234';
+            } catch (error) {
+                console.error('Failed to load user data:', error);
+                showNotification('Failed to load user data.', 'error');
+            }
+        }
+
+        async function loadAccountBalance() {
+            try {
+                if (!userAccountId) {
+                    console.warn('User Account ID not available. Cannot load balance.');
+                    return;
+                }
+                const res = await requireAuthFetch(`/api/accounts/${userAccountId}/balance`);
+                const data = await res.json();
+                const balanceValue = parseFloat(data.balance);
+                document.getElementById('accountBalance').textContent = formatCurrency(balanceValue);
+            } catch (error) {
+                console.error('Failed to load balance:', error);
+                showNotification('Failed to load account balance.', 'error');
+            }
+        }
+
+        async function handleDeposit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const depositBtn = document.getElementById('depositBtn');
+            setButtonLoading(depositBtn, true, 'Processing Deposit...');
+            try {
+                const depositData = { amount: parseFloat(formData.get('amount')) };
+                const res = await requireAuthFetch(`/api/accounts/${userAccountId}/deposit`, {
+                    method: 'POST',
+                    body: depositData
+                });
+                if (!res.ok) {
+                    const errorBody = await res.json();
+                    throw new Error(errorBody.message || 'Deposit failed');
+                }
+                showNotification('Deposit successful!', 'success');
+                form.reset();
+                loadAccountBalance();
+                loadTransactionHistory();
+            } catch (error) {
+                console.error('Deposit failed:', error);
+                showNotification(error.message || 'Deposit failed. Please try again.', 'error');
+            } finally {
+                setButtonLoading(depositBtn, false);
+            }
+        }
+
+        async function handleWithdraw(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const withdrawBtn = document.getElementById('withdrawBtn');
+            setButtonLoading(withdrawBtn, true, 'Processing Withdrawal...');
+            try {
+                const withdrawData = { amount: parseFloat(formData.get('amount')) };
+                const res = await requireAuthFetch(`/api/accounts/${userAccountId}/withdraw`, {
+                    method: 'POST',
+                    body: withdrawData
+                });
+                if (!res.ok) {
+                    const errorBody = await res.json();
+                    throw new Error(errorBody.message || 'Withdrawal failed');
+                }
+                showNotification('Withdrawal successful!', 'success');
+                form.reset();
+                loadAccountBalance();
+                loadTransactionHistory();
+            } catch (error) {
+                console.error('Withdrawal failed:', error);
+                showNotification(error.message || 'Withdrawal failed. Please check your balance.', 'error');
+            } finally {
+                setButtonLoading(withdrawBtn, false);
+            }
+        }
+
+        async function handleTransfer(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const transferBtn = document.getElementById('transferBtn');
+            setButtonLoading(transferBtn, true, 'Processing Transfer...');
+            try {
+                const amount = parseFloat(formData.get('amount'));
+                const toAccountId = (formData.get('account_id') || '').trim();
+                if (!toAccountId) throw new Error('Please enter recipient account ID.');
+                if (!amount || Number.isNaN(amount) || amount <= 0) throw new Error('Enter a valid amount.');
+                if (!userAccountId) throw new Error('Sender account not found. Please log in again.');
+                if (String(userAccountId) === toAccountId) {
+                    throw new Error('Cannot transfer to the same account.');
+                }
+                const endpoint = `/api/accounts/${userAccountId}/transfer/${toAccountId}`;
+                const body = { amount };
+                const res = await requireAuthFetch(endpoint, {
+                    method: 'POST',
+                    body
+                });
+                if (!res.ok) {
+                    const errBody = await res.json().catch(() => ({}));
+                    throw new Error(errBody.message || 'Transfer failed');
+                }
+                showNotification('Transfer successful!', 'success');
+                form.reset();
                 await loadAccountBalance();
                 await loadTransactionHistory();
-                await loadLoanStatus();
-                await loadInsuranceStatus();
-                wireLoanForm();
-                wireInsuranceForm();
-            });
-
-            async function loadUserData() {
-                try {
-                    const res = await requireAuthFetch('/api/auth/me');
-                    const data = await res.json();
-                    console.log('Account object:', data);
-
-                    userAccountId = data.account?.account_id;
-                    userAccountNumber = data.account?.account_number; 
-
-                    document.getElementById('userName').textContent = data.user?.name || 'User';
-                    document.getElementById('accountNumber').textContent = userAccountNumber || '****-****-1234';
-                } catch (error) {
-                    console.error('Failed to load user data:', error);
-                    showNotification('Failed to load user data.', 'error');
-                }
+            } catch (error) {
+                console.error('Transfer failed:', error);
+                showNotification(error.message || 'Transfer failed.', 'error');
+            } finally {
+                setButtonLoading(transferBtn, false);
             }
+        }
 
-            async function loadAccountBalance() {
-                try {
-                    if (!userAccountId) {
-                        console.warn('User Account ID not available. Cannot load balance.');
-                        return;
-                    }
+        function calculateEMI(principal, annualRate, durationMonths) {
+            const monthlyRate = annualRate / 1200;
+            if (monthlyRate === 0) return principal / durationMonths;
+            const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, durationMonths) / (Math.pow(1 + monthlyRate, durationMonths) - 1);
+            return emi;
+        }
 
-                    const res = await requireAuthFetch(`/api/accounts/${userAccountId}/balance`); 
-                    const data = await res.json();
-
-                    const balanceValue = parseFloat(data.balance);
-                    document.getElementById('accountBalance').textContent = formatCurrency(balanceValue);
-                } catch (error) {
-                    console.error('Failed to load balance:', error);
-                    showNotification('Failed to load account balance.', 'error');
+        async function loadLoanStatus() {
+            try {
+                if (!userAccountId) return;
+                const res = await requireAuthFetch(`/api/loan/status`);
+                const applications = await res.json();
+                const loanList = document.getElementById('loanList');
+                const noLoansMessage = document.getElementById('noLoansMessage');
+                const loanStatusTable = document.getElementById('loanStatusTable');
+                loanList.innerHTML = '';
+                if (!Array.isArray(applications) || applications.length === 0) {
+                    noLoansMessage.style.display = 'block';
+                    loanStatusTable.style.display = 'none';
+                    return;
                 }
-            }
-
-            // ================================
-            // DEPOSIT FUNCTIONALITY
-            // ================================
-            async function handleDeposit(event) {
-                event.preventDefault();
-                const form = event.target;
-                const formData = new FormData(form);
-                const depositBtn = document.getElementById('depositBtn');
-                setButtonLoading(depositBtn, true, 'Depositing...'); 
-
-                try {
-                    const depositData = {
-                        amount: parseFloat(formData.get('amount'))
-                    };
-
-                    const res = await requireAuthFetch(`/api/accounts/${userAccountId}/deposit`, {
-                        method: 'POST',
-                        body: depositData
-                    });
-                    if (!res.ok) {
-                        const errorBody = await res.json();
-                        throw new Error(errorBody.message || 'Deposit failed');
+                noLoansMessage.style.display = 'none';
+                loanStatusTable.style.display = 'table';
+                applications.forEach(app => {
+                    const row = document.createElement('tr');
+                    let emi = 0;
+                    if (app.status === 'approved') {
+                        emi = calculateEMI(app.amount, app.interest_rate, app.duration_months);
                     }
-                    showNotification('Deposit successful!', 'success');
-                    form.reset();
-                    loadAccountBalance();
-                    loadTransactionHistory();
-                } catch (error) {
-                    console.error('Deposit failed:', error);
-                    showNotification(error.message || 'Deposit failed. Please try again.', 'error');
-                } finally {
-                    setButtonLoading(depositBtn, false);
-                }
-            }
-
-            // ================================
-            // WITHDRAW FUNCTIONALITY
-            // ================================
-            async function handleWithdraw(event) {
-                event.preventDefault();
-                const form = event.target;
-                const formData = new FormData(form);
-                const withdrawBtn = document.getElementById('withdrawBtn');
-                setButtonLoading(withdrawBtn, true, 'Withdrawing...');
-
-                try {
-                    const withdrawData = {
-                        amount: parseFloat(formData.get('amount'))
-                    };
-
-                    const res = await requireAuthFetch(`/api/accounts/${userAccountId}/withdraw`, {
-                        method: 'POST',
-                        body: withdrawData
-                    });
-                    if (!res.ok) {
-                        const errorBody = await res.json();
-                        throw new Error(errorBody.message || 'Withdrawal failed');
-                    }
-                    showNotification('Withdrawal successful!', 'success');
-                    form.reset();
-                    loadAccountBalance();
-                    loadTransactionHistory();
-                } catch (error) {
-                    console.error('Withdrawal failed:', error);
-                    showNotification(error.message || 'Withdrawal failed. Please check your balance.', 'error');
-                } finally {
-                    setButtonLoading(withdrawBtn, false);
-                }
-            }
-
-            // ================================
-            // TRANSFER FUNCTIONALITY
-            // ================================
-            async function handleTransfer(event) {
-                event.preventDefault();
-                const form = event.target;
-                const formData = new FormData(form);
-                const transferBtn = document.getElementById('transferBtn');
-
-                setButtonLoading(transferBtn, true, 'Transferring...');
-
-                try {
-                    const amount = parseFloat(formData.get('amount'));
-                    const toAccountId = (formData.get('account_id') || '').trim();
-
-                    if (!toAccountId) throw new Error('Please enter recipient account ID.');
-                    if (!amount || Number.isNaN(amount) || amount <= 0) throw new Error('Enter a valid amount.');
-                    if (!userAccountId) throw new Error('Sender account not found. Please log in again.');
-
-                    if (String(userAccountId) === toAccountId) {
-                        throw new Error('Cannot transfer to the same account.');
-                    }
-
-                    const endpoint = `/api/accounts/${userAccountId}/transfer/${toAccountId}`;
-                    const body = { amount };
-
-                    const res = await requireAuthFetch(endpoint, {
-                        method: 'POST',
-                        body
-                    });
-
-                    if (!res.ok) {
-                        const errBody = await res.json().catch(() => ({}));
-                        throw new Error(errBody.message || 'Transfer failed');
-                    }
-
-                    showNotification('Transfer successful!', 'success');
-                    form.reset();
-                    await loadAccountBalance();
-                    await loadTransactionHistory();
-
-                } catch (error) {
-                    console.error('Transfer failed:', error);
-                    showNotification(error.message || 'Transfer failed.', 'error');
-                } finally {
-                    setButtonLoading(transferBtn, false);
-                }
-            }
-
-            // ================================
-            // LOAN APPLICATION FUNCTIONALITY
-            // ================================
-            function calculateEMI(principal, annualRate, durationMonths) {
-                const monthlyRate = annualRate / 1200;
-                if (monthlyRate === 0) {
-                    return principal / durationMonths;
-                }
-                const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, durationMonths) / (Math.pow(1 + monthlyRate, durationMonths) - 1);
-                return emi;
-            }
-
-            async function loadLoanStatus() {
-                try {
-                    if (!userAccountId) {
-                        return;
-                    }
-
-                    const res = await requireAuthFetch(`/api/loan/status`);
-                    const applications = await res.json();
-                    
-                    const loanList = document.getElementById('loanList');
-                    const noLoansMessage = document.getElementById('noLoansMessage');
-                    const loanStatusTable = document.getElementById('loanStatusTable');
-
-                    loanList.innerHTML = '';
-
-                    if (!Array.isArray(applications) || applications.length === 0) {
-                        noLoansMessage.style.display = 'block';
-                        loanStatusTable.style.display = 'none';
-                        return;
-                    }
-
-                    noLoansMessage.style.display = 'none';
-                    loanStatusTable.style.display = 'table';
-
-                    applications.forEach(app => {
-                        const row = document.createElement('tr');
-                        let emi = 0;
-                        if (app.status === 'approved') {
-                            emi = calculateEMI(app.amount, app.interest_rate, app.duration_months);
-                        }
-                        
-                        row.innerHTML = `
-                            <td>${app.loan_type}</td>
-                            <td>${formatCurrency(app.amount)}</td>
-                            <td class="transaction-type ${app.status === 'approved' ? 'credit' : 'debit'}">${app.status}</td>
-                            <td>${formatCurrency(emi)}/mo</td>
-                        `;
-                        loanList.appendChild(row);
-                    });
-                } catch (error) {
-                    console.error('Failed to load loan status:', error);
-                    showNotification('Failed to load loan status.', 'error');
-                }
-            }
-
-            async function handleLoanApplication(event) {
-                event.preventDefault();
-                const form = event.target;
-                const formData = new FormData(form);
-                const loanBtn = document.getElementById('loanBtn');
-                setButtonLoading(loanBtn, true, 'Applying...');
-
-                try {
-                    const loanData = {
-                        amount: parseFloat(formData.get('amount')),
-                        loan_type: formData.get('loan_type'),
-                        interest_rate: parseFloat(formData.get('interest_rate')),
-                        duration_months: parseInt(formData.get('duration_months'))
-                    };
-
-                    const res = await requireAuthFetch('/api/loan/apply', { 
-                        method: 'POST', 
-                        body: loanData 
-                    });
-                    if (!res.ok) {
-                        const errorBody = await res.json();
-                        throw new Error(errorBody.message || 'Loan application failed');
-                    }
-                    showNotification('Loan application submitted successfully!', 'success');
-                    form.reset();
-                    await loadLoanStatus();
-                } catch (error) {
-                    console.error('Loan application failed:', error);
-                    showNotification(error.message || 'Loan application failed. Please try again.', 'error');
-                } finally {
-                    setButtonLoading(loanBtn, false);
-                }
-            }
-            
-            function wireLoanForm() {
-                const loanTypeSelect = document.getElementById('loanType');
-                const interestRateInput = document.getElementById('interestRate');
-
-                loanTypeSelect.addEventListener('change', (event) => {
-                    const selectedType = event.target.value;
-                    let interestRate = '';
-
-                    switch (selectedType) {
-                        case 'personal':
-                            interestRate = '15.00';
-                            break;
-                        case 'home':
-                            interestRate = '10.00';
-                            break;
-                        case 'education':
-                            interestRate = '5.00';
-                            break;
-                        default:
-                            interestRate = '';
-                    }
-
-                    interestRateInput.value = interestRate;
+                    const statusClass = app.status === 'approved' ? 'approved' : app.status === 'declined' ? 'declined' : 'pending';
+                    row.innerHTML = `
+                        <td style="text-transform: capitalize;">${app.loan_type}</td>
+                        <td>${formatCurrency(app.amount)}</td>
+                        <td><span class="status-badge ${statusClass}">${app.status}</span></td>
+                        <td>${emi > 0 ? formatCurrency(emi) : '-'}</td>
+                    `;
+                    loanList.appendChild(row);
                 });
+            } catch (error) {
+                console.error('Failed to load loan status:', error);
+                showNotification('Failed to load loan status.', 'error');
             }
+        }
 
-
-            // ================================
-            // INSURANCE APPLICATION FUNCTIONALITY
-            // ================================
-            function calculatePremium(coverage, age, isSmoker) {
-                let baseRate = 0.0005; // Base premium rate per dollar of coverage
-                let ageFactor = age > 50 ? 1.5 : 1;
-                let smokerSurcharge = isSmoker === '1' ? 1.5 : 1;
-
-                let premium = coverage * baseRate * ageFactor * smokerSurcharge;
-                return premium;
-            }
-
-            async function loadInsuranceStatus() {
-                try {
-                    if (!userAccountId) {
-                        return;
-                    }
-
-                    const res = await requireAuthFetch(`/api/insurance/status`);
-                    const applications = await res.json();
-                    
-                    const insuranceList = document.getElementById('insuranceList');
-                    const noInsuranceMessage = document.getElementById('noInsuranceMessage');
-                    const insuranceStatusTable = document.getElementById('insuranceStatusTable');
-
-                    insuranceList.innerHTML = '';
-
-                    if (!Array.isArray(applications) || applications.length === 0) {
-                        noInsuranceMessage.style.display = 'block';
-                        insuranceStatusTable.style.display = 'none';
-                        return;
-                    }
-
-                    noInsuranceMessage.style.display = 'none';
-                    insuranceStatusTable.style.display = 'table';
-
-                    applications.forEach(app => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${app.insurance_type}</td>
-                            <td>${formatCurrency(app.coverage_amount)}</td>
-                            <td>${formatCurrency(app.premium)}/yr</td>
-                            <td class="transaction-type ${app.status === 'active' ? 'credit' : 'debit'}">${app.status}</td>
-                        `;
-                        insuranceList.appendChild(row);
-                    });
-                } catch (error) {
-                    console.error('Failed to load insurance status:', error);
-                    showNotification('Failed to load insurance status.', 'error');
+        async function handleLoanApplication(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const loanBtn = document.getElementById('loanBtn');
+            setButtonLoading(loanBtn, true, 'Submitting Application...');
+            try {
+                const loanData = {
+                    amount: parseFloat(formData.get('amount')),
+                    loan_type: formData.get('loan_type'),
+                    interest_rate: parseFloat(formData.get('interest_rate')),
+                    duration_months: parseInt(formData.get('duration_months'))
+                };
+                const res = await requireAuthFetch('/api/loan/apply', {
+                    method: 'POST',
+                    body: loanData
+                });
+                if (!res.ok) {
+                    const errorBody = await res.json();
+                    throw new Error(errorBody.message || 'Loan application failed');
                 }
+                showNotification('Loan application submitted successfully!', 'success');
+                form.reset();
+                await loadLoanStatus();
+            } catch (error) {
+                console.error('Loan application failed:', error);
+                showNotification(error.message || 'Loan application failed. Please try again.', 'error');
+            } finally {
+                setButtonLoading(loanBtn, false);
             }
+        }
 
+        function wireLoanForm() {
+            const loanTypeSelect = document.getElementById('loanType');
+            const interestRateInput = document.getElementById('interestRate');
+            loanTypeSelect.addEventListener('change', (event) => {
+                const selectedType = event.target.value;
+                let interestRate = '';
+                switch (selectedType) {
+                    case 'personal': interestRate = '15.00'; break;
+                    case 'home': interestRate = '10.00'; break;
+                    case 'education': interestRate = '5.00'; break;
+                    default: interestRate = '';
+                }
+                interestRateInput.value = interestRate;
+            });
+        }
 
-            async function handleInsuranceApplication(event) {
-                event.preventDefault();
-                const form = event.target;
-                const insuranceBtn = document.getElementById('insuranceBtn');
-                setButtonLoading(insuranceBtn, true, 'Applying...');
+        function calculatePremium(insuranceType, coverage, age, isSmoker) {
+            let baseRate = 0.05;
+            let ageFactor = 1;
+            let smokerSurcharge = 1;
+            if (age > 50) ageFactor = 1.5;
+            if ((insuranceType === 'life' || insuranceType === 'health') && isSmoker === '1') {
+                smokerSurcharge = 1.5;
+            }
+            let premium = coverage * baseRate * ageFactor * smokerSurcharge;
+            return premium;
+        }
 
-                try {
+        async function loadInsuranceStatus() {
+            try {
+                if (!userAccountId) return;
+                const res = await requireAuthFetch(`/api/insurance/status`);
+                const applications = await res.json();
+                const insuranceList = document.getElementById('insuranceList');
+                const noInsuranceMessage = document.getElementById('noInsuranceMessage');
+                const insuranceStatusTable = document.getElementById('insuranceStatusTable');
+                insuranceList.innerHTML = '';
+                if (!Array.isArray(applications) || applications.length === 0) {
+                    noInsuranceMessage.style.display = 'block';
+                    insuranceStatusTable.style.display = 'none';
+                    return;
+                }
+                noInsuranceMessage.style.display = 'none';
+                insuranceStatusTable.style.display = 'table';
+                applications.forEach(app => {
+                    const row = document.createElement('tr');
+                    const isApprovedOrActive = app.status === 'approved' || app.status === 'active';
+                    const statusClass = isApprovedOrActive ? 'approved' : app.status === 'declined' ? 'declined' : 'pending';
+                    row.innerHTML = `
+                        <td style="text-transform: capitalize;">${app.insurance_type}</td>
+                        <td>${formatCurrency(app.coverage_amount)}</td>
+                        <td>${formatCurrency(app.premium)}</td>
+                        <td><span class="status-badge ${statusClass}">${app.status}</span></td>
+                    `;
+                    insuranceList.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Failed to load insurance status:', error);
+                showNotification('Failed to load insurance status.', 'error');
+            }
+        }
+
+        async function handleInsuranceApplication(event) {
+            event.preventDefault();
+            const form = event.target;
+            const insuranceBtn = document.getElementById('insuranceBtn');
+            setButtonLoading(insuranceBtn, true, 'Submitting Application...');
+            try {
+                const coverageAmount = parseFloat(document.getElementById('coverageAmount').value);
+                const age = parseInt(document.getElementById('age').value);
+                const isSmoker = document.getElementById('smoker').value;
+                const durationYears = parseInt(document.getElementById('insuranceDuration').value);
+                const insuranceType = document.getElementById('insuranceType').value;
+                if (isNaN(coverageAmount) || isNaN(age) || isNaN(durationYears) || !insuranceType || isSmoker === '') {
+                    throw new Error("Please fill out all required fields.");
+                }
+                const calculatedPremium = calculatePremium(insuranceType, coverageAmount, age, isSmoker);
+                document.getElementById('hiddenPremium').value = calculatedPremium.toFixed(2);
+                document.getElementById('premiumAmount').value = formatCurrency(calculatedPremium);
+                const insuranceData = {
+                    insurance_type: insuranceType,
+                    premium: calculatedPremium.toFixed(2),
+                    coverage_amount: coverageAmount,
+                    duration_years: durationYears,
+                    age: age,
+                    smoker: isSmoker === '1'
+                };
+                const res = await requireAuthFetch('/api/insurance/apply', {
+                    method: 'POST',
+                    body: insuranceData
+                });
+                if (!res.ok) {
+                    const errorBody = await res.json();
+                    throw new Error(errorBody.message || 'Insurance application failed');
+                }
+                showNotification('Insurance application submitted successfully!', 'success');
+                form.reset();
+                document.getElementById('premiumAmount').value = '';
+                loadInsuranceStatus();
+            } catch (error) {
+                console.error('Insurance application failed:', error);
+                showNotification(error.message || 'Insurance application failed. Please try again.', 'error');
+            } finally {
+                setButtonLoading(insuranceBtn, false);
+            }
+        }
+
+        function wireInsuranceForm() {
+            const formInputs = document.querySelectorAll('#insuranceForm input, #insuranceForm select');
+            formInputs.forEach(input => {
+                input.addEventListener('input', () => {
                     const coverageAmount = parseFloat(document.getElementById('coverageAmount').value);
                     const age = parseInt(document.getElementById('age').value);
                     const isSmoker = document.getElementById('smoker').value;
-                    const durationYears = parseInt(document.getElementById('insuranceDuration').value);
                     const insuranceType = document.getElementById('insuranceType').value;
-
-                    if (isNaN(coverageAmount) || isNaN(age) || isNaN(durationYears) || !insuranceType || !isSmoker) {
-                        throw new Error("Please fill out all required fields.");
+                    if (!isNaN(coverageAmount) && coverageAmount > 0 && !isNaN(age) && age > 0 && isSmoker !== '' && insuranceType !== '') {
+                        const calculatedPremium = calculatePremium(insuranceType, coverageAmount, age, isSmoker);
+                        document.getElementById('premiumAmount').value = formatCurrency(calculatedPremium);
+                        document.getElementById('hiddenPremium').value = calculatedPremium.toFixed(2);
+                    } else {
+                        document.getElementById('premiumAmount').value = '';
+                        document.getElementById('hiddenPremium').value = '';
                     }
-
-                    const calculatedPremium = calculatePremium(coverageAmount, age, isSmoker);
-                    document.getElementById('hiddenPremium').value = calculatedPremium.toFixed(2);
-                    document.getElementById('premiumAmount').value = formatCurrency(calculatedPremium);
-
-                    const insuranceData = {
-                        insurance_type: insuranceType,
-                        premium: calculatedPremium.toFixed(2),
-                        coverage_amount: coverageAmount,
-                        duration_years: durationYears,
-                        age: age,
-                        smoker: isSmoker === '1'
-                    };
-
-                    const res = await requireAuthFetch('/api/insurance/apply', { 
-                        method: 'POST', 
-                        body: insuranceData 
-                    });
-                    if (!res.ok) {
-                        const errorBody = await res.json();
-                        throw new Error(errorBody.message || 'Insurance application failed');
-                    }
-                    showNotification('Insurance application submitted successfully!', 'success');
-                    form.reset();
-                    document.getElementById('premiumAmount').value = '';
-                    loadInsuranceStatus();
-                } catch (error) {
-                    console.error('Insurance application failed:', error);
-                    showNotification(error.message || 'Insurance application failed. Please try again.', 'error');
-                } finally {
-                    setButtonLoading(insuranceBtn, false);
-                }
-            }
-
-            function wireInsuranceForm() {
-                const formInputs = document.querySelectorAll('#insuranceForm input, #insuranceForm select');
-                formInputs.forEach(input => {
-                    input.addEventListener('input', () => {
-                        const coverageAmount = parseFloat(document.getElementById('coverageAmount').value);
-                        const age = parseInt(document.getElementById('age').value);
-                        const isSmoker = document.getElementById('smoker').value;
-
-                        if (!isNaN(coverageAmount) && coverageAmount > 0 && !isNaN(age) && age > 0 && isSmoker !== '') {
-                            const calculatedPremium = calculatePremium(coverageAmount, age, isSmoker);
-                            document.getElementById('premiumAmount').value = formatCurrency(calculatedPremium);
-                            document.getElementById('hiddenPremium').value = calculatedPremium.toFixed(2);
-                        } else {
-                            document.getElementById('premiumAmount').value = '';
-                            document.getElementById('hiddenPremium').value = '';
-                        }
-                    });
-                });
-            }
-
-            // ================================
-            // TRANSACTION HISTORY
-            // ================================
-            async function loadTransactionHistory() {
-                try {
-                    const res = await requireAuthFetch(`/api/accounts/${userAccountId}/history`);
-                    const data = await res.json();
-                    const transactions = data.transactions || data || [];
-                    const transactionList = document.getElementById('transactionList');
-                    const noTransactionsMessage = document.getElementById('noTransactionsMessage');
-                    const transactionsTable = document.getElementById('transactionsTable');
-
-                    transactionList.innerHTML = '';
-
-                    if (!Array.isArray(transactions) || transactions.length === 0) {
-                        noTransactionsMessage.style.display = 'block';
-                        transactionsTable.style.display = 'none';
-                        return;
-                    }
-
-                    noTransactionsMessage.style.display = 'none';
-                    transactionsTable.style.display = 'table';
-
-                    transactions.forEach(tx => {
-                        const row = document.createElement('tr');
-                        let fromTo;
-
-                        if (tx.type === 'loan') {
-                            fromTo = `Bank → Self (Loan)`;
-                        } else if (tx.type === 'deposit') {
-                            fromTo = `Self → Self`;
-                        } else if (tx.type === 'withdraw') {
-                            fromTo = `Self → Self`;
-                        } else if (tx.type === 'transfer') {
-                            if (String(tx.from_account) === String(userAccountNumber)) {
-                                fromTo = `Self → ${tx.to_account}`;
-                            } else {
-                                fromTo = `${tx.from_account} → Self`;
-                            }
-                        } else if (tx.type === 'insurance_premium') {
-                            fromTo = `Self → Bank (Premium)`;
-                        } else {
-                            fromTo = 'Unknown';
-                        }
-
-                        const amount = parseFloat(tx.amount);
-                        const isCredit = tx.type === 'deposit' || tx.type === 'loan' || (tx.type === 'transfer' && String(tx.to_account) === String(userAccountNumber));
-                        const sign = isCredit ? '+' : '-';
-                        const cssClass = isCredit ? 'credit' : 'debit';
-
-                        row.innerHTML = `
-                            <td>${fromTo}</td>
-                            <td class="${cssClass}">${sign}${formatCurrency(amount)}</td>
-                        `;
-
-                        transactionList.appendChild(row);
-                    });
-
-                } catch (error) {
-                    console.error('Failed to load transaction history:', error);
-                    showNotification('Failed to load transaction history.', 'error');
-                }
-            }
-
-            // ================================
-            // UTILITY FUNCTIONS
-            // ================================
-            async function refreshBalance() {
-                await loadAccountBalance();
-                showNotification('Balance refreshed!', 'success');
-            }
-
-            function logout() {
-                requireAuthFetch('/auth/logout', { method: 'POST' })
-                    .then(() => {
-                        showNotification('Logged out successfully', 'success');
-                        window.location.href = 'login.html'; 
-                    })
-                    .catch(() => {
-                        window.location.href = 'login.html';
-                    });
-            }
-
-            function scrollToSection(sectionId) {
-                document.getElementById(sectionId).scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-            }
-
-            function formatCurrency(amount) {
-                return new Intl.NumberFormat('en-IN', {
-                    style: 'currency',
-                    currency: 'INR'
-                }).format(amount);
-            }
-
-            function showNotification(message, type) {
-                const notification = document.getElementById('notification');
-                if (!notification) return;
-                notification.textContent = message;
-                notification.className = `notification show ${type}`;
-                setTimeout(() => {
-                    notification.className = 'notification';
-                }, 3000);
-            }
-
-            function setButtonLoading(button, isLoading, loadingText = 'Processing...') {
-                if (!button) return;
-                if (isLoading) {
-                    button.dataset.originalText = button.textContent.trim();
-                    button.innerHTML = `<span class="loading"></span> ${loadingText}`;
-                    button.disabled = true;
-                } else {
-                    button.innerHTML = button.dataset.originalText;
-                    button.disabled = false;
-                }
-            }
-
-            document.addEventListener('DOMContentLoaded', () => {
-                const buttons = document.querySelectorAll('.submit-btn, .action-btn');
-                buttons.forEach(btn => {
-                    btn.dataset.originalText = btn.textContent.trim();
                 });
             });
-        </script>
-    </body>
+        }
+
+        async function loadTransactionHistory() {
+            try {
+                const res = await requireAuthFetch(`/api/accounts/${userAccountId}/history`);
+                const data = await res.json();
+                const transactions = data.transactions || data || [];
+                const transactionList = document.getElementById('transactionList');
+                const noTransactionsMessage = document.getElementById('noTransactionsMessage');
+                
+                transactionList.innerHTML = '';
+
+                if (!Array.isArray(transactions) || transactions.length === 0) {
+                    transactionList.appendChild(noTransactionsMessage);
+                    return;
+                }
+
+                transactions.forEach(tx => {
+                    const item = document.createElement('div');
+                    item.className = 'transaction-item';
+
+                    let description, typeClass, typeIcon;
+                    const amount = parseFloat(tx.amount);
+                    const isCredit = tx.type === 'deposit' || tx.type === 'loan' || (tx.type === 'transfer' && String(tx.to_account) === String(userAccountNumber));
+                    const sign = isCredit ? '+' : '-';
+                    const amountClass = isCredit ? 'credit' : 'debit';
+                    
+                    switch(tx.type) {
+                        case 'deposit':
+                            description = 'Deposit to Account';
+                            typeClass = 'deposit-tx';
+                            typeIcon = '💰';
+                            break;
+                        case 'withdraw':
+                            description = 'Cash Withdrawal';
+                            typeClass = 'withdraw-tx';
+                            typeIcon = '💸';
+                            break;
+                        case 'transfer':
+                            if (String(tx.from_account) === String(userAccountNumber)) {
+                                description = `Transfer to ${tx.to_account}`;
+                                typeClass = 'transfer-tx';
+                                typeIcon = '↗️';
+                            } else {
+                                description = `Transfer from ${tx.from_account}`;
+                                typeClass = 'transfer-tx';
+                                typeIcon = '↙️';
+                            }
+                            break;
+                        case 'loan':
+                            description = 'Loan Disbursement';
+                            typeClass = 'loan-tx';
+                            typeIcon = '🏠';
+                            break;
+                        case 'insurance_premium':
+                            description = 'Insurance Premium Payment';
+                            typeClass = 'insurance-tx';
+                            typeIcon = '🛡️';
+                            break;
+                        default:
+                            description = 'Unknown Transaction';
+                            typeClass = 'transfer-tx';
+                            typeIcon = '❓';
+                    }
+
+                    item.innerHTML = `
+                        <div class="transaction-info">
+                            <div class="transaction-type-icon ${typeClass}">${typeIcon}</div>
+                            <div class="transaction-details">
+                                <h4>${description}</h4>
+                                <p>${new Date().toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount ${amountClass}">${sign}${formatCurrency(amount)}</div>
+                    `;
+                    transactionList.appendChild(item);
+                });
+
+            } catch (error) {
+                console.error('Failed to load transaction history:', error);
+                showNotification('Failed to load transaction history.', 'error');
+            }
+        }
+
+        async function refreshBalance() {
+            await loadAccountBalance();
+            showNotification('Balance refreshed!', 'success');
+        }
+
+        function logout() {
+            requireAuthFetch('/api/auth/logout', { method: 'POST' })
+                .then(() => {
+                    showNotification('Logged out successfully', 'success');
+                    window.location.href = 'login.html';
+                })
+                .catch(() => {
+                    window.location.href = 'login.html';
+                });
+        }
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            if (!notification) return;
+            notification.textContent = message;
+            notification.className = `notification show ${type}`;
+            setTimeout(() => {
+                notification.className = 'notification';
+            }, 4000);
+        }
+
+        function setButtonLoading(button, isLoading, loadingText = 'Processing...') {
+            if (!button) return;
+            if (isLoading) {
+                button.dataset.originalText = button.textContent.trim();
+                button.innerHTML = `<span class="loading"></span> ${loadingText}`;
+                button.disabled = true;
+            } else {
+                button.innerHTML = button.dataset.originalText;
+                button.disabled = false;
+            }
+        }
+    </script>
+</body>
 </html>
