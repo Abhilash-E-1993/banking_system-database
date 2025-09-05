@@ -84,7 +84,7 @@ router.get("/admin/all", isAdmin, async (req, res) => {
     }
 });
 
-// Admin: approve/reject a loan
+// Admin: approve/reject a loan (with a database transaction)
 router.post("/admin/update", isAdmin, async (req, res) => {
     const { loanId, action } = req.body;
 
@@ -92,17 +92,61 @@ router.post("/admin/update", isAdmin, async (req, res) => {
         return res.status(400).json({ message: "Invalid request" });
     }
 
+    const connection = await pool.getConnection();
+
     try {
-        const sql = "UPDATE loans SET status = ? WHERE loan_id = ?";
-        const [result] = await pool.query(sql, [action, loanId]);
-        
-        if (result.affectedRows === 0) {
+        await connection.beginTransaction();
+
+        // 1. Get loan details and lock the row
+        const [loanDetails] = await connection.query("SELECT * FROM loans WHERE loan_id = ? FOR UPDATE", [loanId]);
+        if (loanDetails.length === 0) {
+            await connection.rollback();
             return res.status(404).json({ message: "Loan application not found" });
         }
+        const loan = loanDetails[0];
+
+        // Prevent double processing
+        if (loan.status !== 'pending') {
+            await connection.rollback();
+            return res.status(409).json({ message: `Loan is already ${loan.status}` });
+        }
+
+        // 2. Update loan status
+        const [updateResult] = await connection.query("UPDATE loans SET status = ? WHERE loan_id = ?", [action, loanId]);
+        if (updateResult.affectedRows === 0) {
+            await connection.rollback();
+            return res.status(500).json({ message: "Failed to update loan status" });
+        }
+
+        if (action === "approved") {
+            const amount = loan.amount;
+            const userId = loan.user_id;
+
+            // 3. Get user's account ID and number
+            const [accountDetails] = await connection.query("SELECT account_id, account_number FROM accounts WHERE user_id = ? FOR UPDATE", [userId]);
+            if (accountDetails.length === 0) {
+                await connection.rollback();
+                return res.status(404).json({ message: "User account not found" });
+            }
+            const account = accountDetails[0];
+
+            // 4. Credit the user's account
+            await connection.query("UPDATE accounts SET balance = balance + ? WHERE account_id = ?", [amount, account.account_id]);
+
+            // 5. Record the loan transaction
+           const transactionSql = "INSERT INTO transactions (account_id, from_account, to_account, amount, type) VALUES (?, ?, ?, ?, 'loan')";
+          await connection.query(transactionSql, [account.account_id, 'Bank', account.account_number, amount]);
+        }
+
+        await connection.commit();
         res.json({ message: `Loan ${action}`, loanId });
+
     } catch (err) {
+        await connection.rollback();
         console.error("Database error in /admin/update:", err);
         return res.status(500).json({ message: "Internal Server Error" });
+    } finally {
+        connection.release();
     }
 });
 

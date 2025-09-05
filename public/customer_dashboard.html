@@ -522,11 +522,36 @@
                     </button>
                 </form>
             </div>
-            <div class="service-card" id="transaction-history">
-    <div class="service-header">
-        <div class="service-icon history-icon">📜</div>
-        <div class="service-title">Transaction History</div>
-    </div>
+           
+    
+           </div>
+
+                        <div class="service-card" id="loan-status">
+                <div class="service-header">
+                    <div class="service-icon loan-icon">🏠</div>
+                    <div class="service-title">My Loans</div>
+                </div>
+                <div id="loanStatusContainer">
+                    <p id="noLoansMessage" style="text-align: center; color: #999;">No active loan applications found.</p>
+                    <table class="transaction-table" id="loanStatusTable" style="display: none; width: 100%; border-collapse: collapse; text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>Loan Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Monthly EMI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loanList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="service-card" id="transaction-history">
+                <div class="service-header">
+                    <div class="service-icon history-icon">📜</div>
+                    <div class="service-title">Transaction History</div>
+                </div>
 
     <!-- Section Title -->
     <h3 style="text-align: center; margin: 10px 0; color: #333;">Transaction History</h3>
@@ -547,517 +572,574 @@
     </div>
 </div>
         <div id="notification" class="notification"></div>
-        <script>
-            let userAccountId = null;
-            let userAccountNumber = null;
+       <script>
+    let userAccountId = null;
+    let userAccountNumber = null;
 
+    // ================================
+    // BACKEND INTEGRATION SECTION
+    // ================================
+    // TODO: Replace with your actual backend API base URL
+    const API_BASE_URL = 'http://localhost:3000';
 
-            // ================================
-            // BACKEND INTEGRATION SECTION
-            // ================================
-            // TODO: Replace with your actual backend API base URL
-            const API_BASE_URL = '';
+    // ---- Auth/session endpoints (adjust if backend differs) ----
+    const AUTH_ME = `${API_BASE_URL}/api/auth/me`;
+    const AUTH_LOGOUT = `${API_BASE_URL}/api/auth/logout`;
+    const ACCOUNTS_BASE = `${API_BASE_URL}/api/accounts`;
+    const LOANS_BASE = `${API_BASE_URL}/api/loans`;
+    const INSURANCE_BASE = `${API_BASE_URL}/api/insurance`;
+    const TRANSACTIONS_BASE = `${API_BASE_URL}/api/transactions`;
 
-            // ---- Auth/session endpoints (adjust if backend differs) ----
-            const AUTH_ME = `${API_BASE_URL}/api/auth/me`;
-            const AUTH_LOGOUT = `${API_BASE_URL}/api/auth/logout`;
-            const ACCOUNTS_BASE = `${API_BASE_URL}/api/accounts`;
-            const LOANS_BASE = `${API_BASE_URL}/api/loans`;
-            const INSURANCE_BASE = `${API_BASE_URL}/api/insurance`;
-            const TRANSACTIONS_BASE = `${API_BASE_URL}/api/transactions`; // New endpoint for transactions
+    /**
+     * A session-aware fetch wrapper that handles authentication.
+     * @param {string} endpoint The API endpoint to call.
+     * @param {object} opts Fetch options, including method, headers, and body.
+     * @returns {Promise<Response>} The fetch response object.
+     */
+    async function requireAuthFetch(endpoint, opts = {}) {
+        console.log(`Fetching from: ${API_BASE_URL}${endpoint}`);
+        opts.credentials = 'include'; // include session cookie
+        opts.headers = opts.headers || {};
 
-            /**
-             * A session-aware fetch wrapper that handles authentication.
-             * @param {string} endpoint The API endpoint to call.
-             * @param {object} opts Fetch options, including method, headers, and body.
-             * @returns {Promise<Response>} The fetch response object.
-             */
-            async function requireAuthFetch(endpoint, opts = {}) {
-                console.log(`Fetching from: ${API_BASE_URL}${endpoint}`);
-                opts.credentials = 'include'; // include session cookie
-                opts.headers = opts.headers || {};
+        if (opts.body && typeof opts.body === 'object' && !(opts.body instanceof FormData)) {
+            opts.headers['Content-Type'] = 'application/json';
+            opts.body = JSON.stringify(opts.body);
+        }
 
-                if (opts.body && typeof opts.body === 'object' && !(opts.body instanceof FormData)) {
-                    opts.headers['Content-Type'] = 'application/json';
-                    opts.body = JSON.stringify(opts.body);
-                }
+        const res = await fetch(`${API_BASE_URL}${endpoint}`, opts);
 
-                const res = await fetch(`${API_BASE_URL}${endpoint}`, opts);
+        if (res.status === 401) {
+            // Session expired or unauthorized -> redirect to login page
+            window.location.href = 'login.html'; // TODO: change if login page has a different path
+            throw new Error('Unauthorized');
+        }
 
-                if (res.status === 401) {
-                    // Session expired or unauthorized -> redirect to login page
-                    window.location.href = 'login.html'; // TODO: change if login page has a different path
-                    throw new Error('Unauthorized');
-                }
+        return res;
+    }
 
-                return res;
+    // ================================
+    // INITIALIZATION
+    // ================================
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadUserData();
+        await loadAccountBalance();
+        await loadTransactionHistory(); // Load history on page load
+        await loadLoanStatus(); // Load loan status on page load
+        wireLoanForm();
+    });
+
+    /**
+     * Fetches and displays user data from the backend.
+     */
+    async function loadUserData() {
+        try {
+            const res = await requireAuthFetch('/api/auth/me');
+            const data = await res.json();
+            console.log('Account object:', data);
+
+            // Populate global variables
+            userAccountId = data.account?.account_id;
+            userAccountNumber = data.account?.account_number; 
+
+            // Update the UI with the fetched data
+            document.getElementById('userName').textContent = data.user?.name || 'User';
+            document.getElementById('accountNumber').textContent = userAccountNumber || '****-****-1234';
+        } catch (error) {
+            console.error('Failed to load user data:', error);
+            showNotification('Failed to load user data.', 'error');
+        }
+    }
+
+    /**
+     * Fetches and updates the account balance.
+     */
+    async function loadAccountBalance() {
+        try {
+            if (!userAccountId) {
+                console.warn('User Account ID not available. Cannot load balance.');
+                return;
             }
 
-            // ================================
-            // INITIALIZATION
-            // ================================
+            const res = await requireAuthFetch(`/api/accounts/${userAccountId}/balance`); 
+            const data = await res.json();
 
-            document.addEventListener('DOMContentLoaded', async function() {
-                await loadUserData();
-                await loadAccountBalance();
-                await loadTransactionHistory(); // Load history on page load
-                wireLoanForm();
+            console.log("API raw response:", data);
+            console.log("Balance type:", typeof data.balance, "Value:", data.balance);
+
+            const balanceValue = parseFloat(data.balance);
+            console.log("Parsed balance:", balanceValue);
+
+            document.getElementById('accountBalance').textContent = formatCurrency(balanceValue);
+        } catch (error) {
+            console.error('Failed to load balance:', error);
+            showNotification('Failed to load account balance.', 'error');
+        }
+    }
+
+    // ================================
+    // DEPOSIT FUNCTIONALITY
+    // ================================
+
+    /**
+     * Handles the deposit form submission.
+     * @param {Event} event The form submit event.
+     */
+    async function handleDeposit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const depositBtn = document.getElementById('depositBtn');
+        setButtonLoading(depositBtn, true, 'Depositing...'); 
+
+        try {
+            const depositData = {
+                amount: parseFloat(formData.get('amount'))
+            };
+
+            const res = await requireAuthFetch(`/api/accounts/${userAccountId}/deposit`, {
+                method: 'POST',
+                body: depositData
+            });
+            if (!res.ok) {
+                const errorBody = await res.json();
+                throw new Error(errorBody.message || 'Deposit failed');
+            }
+            showNotification('Deposit successful!', 'success');
+            form.reset();
+            loadAccountBalance();
+            loadTransactionHistory();
+        } catch (error) {
+            console.error('Deposit failed:', error);
+            showNotification(error.message || 'Deposit failed. Please try again.', 'error');
+        } finally {
+            setButtonLoading(depositBtn, false);
+        }
+    }
+
+    // ================================
+    // WITHDRAW FUNCTIONALITY
+    // ================================
+
+    /**
+     * Handles the withdraw form submission.
+     * @param {Event} event The form submit event.
+     */
+    async function handleWithdraw(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        setButtonLoading(withdrawBtn, true, 'Withdrawing...');
+
+        try {
+            const withdrawData = {
+                amount: parseFloat(formData.get('amount'))
+            };
+
+            const res = await requireAuthFetch(`/api/accounts/${userAccountId}/withdraw`, {
+                method: 'POST',
+                body: withdrawData
+            });
+            if (!res.ok) {
+                const errorBody = await res.json();
+                throw new Error(errorBody.message || 'Withdrawal failed');
+            }
+            showNotification('Withdrawal successful!', 'success');
+            form.reset();
+            loadAccountBalance();
+            loadTransactionHistory();
+        } catch (error) {
+            console.error('Withdrawal failed:', error);
+            showNotification(error.message || 'Withdrawal failed. Please check your balance.', 'error');
+        } finally {
+            setButtonLoading(withdrawBtn, false);
+        }
+    }
+
+    // ================================
+    // TRANSFER FUNCTIONALITY
+    // ================================
+
+    /**
+     * Handles the transfer form submission.
+     * @param {Event} event The form submit event.
+     */
+    async function handleTransfer(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const transferBtn = document.getElementById('transferBtn');
+
+        setButtonLoading(transferBtn, true, 'Transferring...');
+
+        try {
+            const amount = parseFloat(formData.get('amount'));
+            const toAccountId = (formData.get('account_id') || '').trim();
+
+            if (!toAccountId) throw new Error('Please enter recipient account ID.');
+            if (!amount || Number.isNaN(amount) || amount <= 0) throw new Error('Enter a valid amount.');
+            if (!userAccountId) throw new Error('Sender account not found. Please log in again.');
+
+            if (String(userAccountId) === toAccountId) {
+                throw new Error('Cannot transfer to the same account.');
+            }
+
+            const endpoint = `/api/accounts/${userAccountId}/transfer/${toAccountId}`;
+            const body = { amount };
+
+            const res = await requireAuthFetch(endpoint, {
+                method: 'POST',
+                body
             });
 
-            /**
-             * Fetches and displays user data from the backend.
-             */
-            async function loadUserData() {
-                try {
-                    const res = await requireAuthFetch('/api/auth/me');
-                    const data = await res.json();
-                    console.log('Account object:', data);
-
-
-                    // Populate global variables
-                    userAccountId = data.account?.account_id;
-                    userAccountNumber = data.account?.account_number; 
-
-                    // Update the UI with the fetched data
-                    document.getElementById('userName').textContent = data.user?.name || 'User';
-                    document.getElementById('accountNumber').textContent = userAccountNumber || '****-****-1234';
-                } catch (error) {
-                    console.error('Failed to load user data:', error);
-                    showNotification('Failed to load user data.', 'error');
-                }
+            if (!res.ok) {
+                const errBody = await res.json().catch(() => ({}));
+                throw new Error(errBody.message || 'Transfer failed');
             }
 
-            /**
-             * Fetches and updates the account balance.
-             */
-            async function loadAccountBalance() {
-                try {
-                    if (!userAccountId) {
-                        console.warn('User Account ID not available. Cannot load balance.');
-                        return;
-                    }
+            showNotification('Transfer successful!', 'success');
+            form.reset();
+            await loadAccountBalance();
+            await loadTransactionHistory();
 
-                    const res = await requireAuthFetch(`/api/accounts/${userAccountId}/balance`); 
-                    const data = await res.json();
+        } catch (error) {
+            console.error('Transfer failed:', error);
+            showNotification(error.message || 'Transfer failed.', 'error');
+        } finally {
+            setButtonLoading(transferBtn, false);
+        }
+    }
 
-                    console.log("API raw response:", data);
-                    console.log("Balance type:", typeof data.balance, "Value:", data.balance);
+    // ================================
+    // LOAN APPLICATION FUNCTIONALITY
+    // ================================
 
-                    const balanceValue = parseFloat(data.balance);
-                    console.log("Parsed balance:", balanceValue);
+    /**
+     * Calculates the monthly EMI for a loan.
+     * @param {number} principal The loan amount.
+     * @param {number} annualRate The annual interest rate (e.g., 10 for 10%).
+     * @param {number} durationMonths The loan duration in months.
+     * @returns {number} The monthly EMI.
+     */
+    function calculateEMI(principal, annualRate, durationMonths) {
+        const monthlyRate = annualRate / 1200; // Convert annual percentage to monthly decimal
+        if (monthlyRate === 0) {
+            return principal / durationMonths;
+        }
+        const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, durationMonths) / (Math.pow(1 + monthlyRate, durationMonths) - 1);
+        return emi;
+    }
 
-                    document.getElementById('accountBalance').textContent = formatCurrency(balanceValue);
-                } catch (error) {
-                    console.error('Failed to load balance:', error);
-                    showNotification('Failed to load account balance.', 'error');
-                }
+    /**
+     * Fetches and displays the user's loan application status.
+     */
+    async function loadLoanStatus() {
+        try {
+            if (!userAccountId) {
+                return;
             }
 
-            // ================================
-            // DEPOSIT FUNCTIONALITY
-            // ================================
-
-            /**
-             * Handles the deposit form submission.
-             * @param {Event} event The form submit event.
-             */
-            async function handleDeposit(event) {
-                event.preventDefault();
-                const form = event.target;
-                const formData = new FormData(form);
-                const depositBtn = document.getElementById('depositBtn');
-                setButtonLoading(depositBtn, true, 'Depositing...'); 
-
-                try {
-                    const depositData = {
-                        amount: parseFloat(formData.get('amount'))
-                    };
-
-                    const res = await requireAuthFetch(`/api/accounts/${userAccountId}/deposit`, {
-                        method: 'POST',
-                        body: depositData
-                    });
-                    if (!res.ok) {
-                        const errorBody = await res.json();
-                        throw new Error(errorBody.message || 'Deposit failed');
-                    }
-                    showNotification('Deposit successful!', 'success');
-                    form.reset();
-                    loadAccountBalance();
-                    loadTransactionHistory();
-                } catch (error) {
-                    console.error('Deposit failed:', error);
-                    showNotification(error.message || 'Deposit failed. Please try again.', 'error');
-                } finally {
-                    setButtonLoading(depositBtn, false);
-                }
-            }
-
-            // ================================
-            // WITHDRAW FUNCTIONALITY
-            // ================================
-
-            /**
-             * Handles the withdraw form submission.
-             * @param {Event} event The form submit event.
-             */
-            async function handleWithdraw(event) {
-                event.preventDefault();
-                const form = event.target;
-                const formData = new FormData(form);
-                const withdrawBtn = document.getElementById('withdrawBtn');
-                setButtonLoading(withdrawBtn, true, 'Withdrawing...');
-
-                try {
-                    const withdrawData = {
-                        amount: parseFloat(formData.get('amount'))
-                    };
-
-                    const res = await requireAuthFetch(`/api/accounts/${userAccountId}/withdraw`, {
-                        method: 'POST',
-                        body: withdrawData
-                    });
-                    if (!res.ok) {
-                        const errorBody = await res.json();
-                        throw new Error(errorBody.message || 'Withdrawal failed');
-                    }
-                    showNotification('Withdrawal successful!', 'success');
-                    form.reset();
-                    loadAccountBalance();
-                    loadTransactionHistory();
-                } catch (error) {
-                    console.error('Withdrawal failed:', error);
-                    showNotification(error.message || 'Withdrawal failed. Please check your balance.', 'error');
-                } finally {
-                    setButtonLoading(withdrawBtn, false);
-                }
-            }
-
-            // ================================
-            // TRANSFER FUNCTIONALITY
-            // ================================
-
-            /**
-             * Handles the transfer form submission.
-             * @param {Event} event The form submit event.
-             */
-            async function handleTransfer(event) {
-                event.preventDefault();
-                const form = event.target;
-                const formData = new FormData(form);
-                const transferBtn = document.getElementById('transferBtn');
-
-                setButtonLoading(transferBtn, true, 'Transferring...');
-
-                try {
-                    const amount = parseFloat(formData.get('amount'));
-                    const toAccountId = (formData.get('account_id') || '').trim();
-
-                    if (!toAccountId) throw new Error('Please enter recipient account ID.');
-                    if (!amount || Number.isNaN(amount) || amount <= 0) throw new Error('Enter a valid amount.');
-                    if (!userAccountId) throw new Error('Sender account not found. Please log in again.');
-
-                    if (String(userAccountId) === toAccountId) {
-                        throw new Error('Cannot transfer to the same account.');
-                    }
-
-                    const endpoint = `/api/accounts/${userAccountId}/transfer/${toAccountId}`;
-                    const body = { amount };
-
-                    const res = await requireAuthFetch(endpoint, {
-                        method: 'POST',
-                        body
-                    });
-
-                    if (!res.ok) {
-                        const errBody = await res.json().catch(() => ({}));
-                        throw new Error(errBody.message || 'Transfer failed');
-                    }
-
-                    showNotification('Transfer successful!', 'success');
-                    form.reset();
-                    await loadAccountBalance();
-                    await loadTransactionHistory();
-
-                } catch (error) {
-                    console.error('Transfer failed:', error);
-                    showNotification(error.message || 'Transfer failed.', 'error');
-                } finally {
-                    setButtonLoading(transferBtn, false);
-                }
-            }
-
-
-            // ================================
-            // LOAN APPLICATION FUNCTIONALITY
-            // ================================
-
-            /**
-             * Handles the loan application form submission.
-             * @param {Event} event The form submit event.
-             */
-            async function handleLoanApplication(event) {
-                event.preventDefault();
-                const form = event.target;
-                const formData = new FormData(form);
-                const loanBtn = document.getElementById('loanBtn');
-                setButtonLoading(loanBtn, true, 'Applying...');
-
-                try {
-                    const loanData = {
-                        amount: parseFloat(formData.get('amount')),
-                        loan_type: formData.get('loan_type'),
-                        interest_rate: parseFloat(formData.get('interest_rate')),
-                        duration_months: parseInt(formData.get('duration_months'))
-                    };
-
-                    const res = await requireAuthFetch('/loan/apply', { 
-                        method: 'POST', 
-                        body: loanData 
-                    });
-                    if (!res.ok) {
-                        const errorBody = await res.json();
-                        throw new Error(errorBody.message || 'Loan application failed');
-                    }
-                    showNotification('Loan application submitted successfully!', 'success');
-                    form.reset();
-                    loadTransactionHistory();
-                } catch (error) {
-                    console.error('Loan application failed:', error);
-                    showNotification(error.message || 'Loan application failed. Please try again.', 'error');
-                } finally {
-                    setButtonLoading(loanBtn, false);
-                }
-            }
+            const res = await requireAuthFetch(`/api/loan/status`);
+            const applications = await res.json();
             
-            // Wires up the loan form to automatically set interest rates
-            function wireLoanForm() {
-                const loanTypeSelect = document.getElementById('loanType');
-                const interestRateInput = document.getElementById('interestRate');
+            const loanList = document.getElementById('loanList');
+            const noLoansMessage = document.getElementById('noLoansMessage');
+            const loanStatusTable = document.getElementById('loanStatusTable');
 
-                loanTypeSelect.addEventListener('change', (event) => {
-                    const selectedType = event.target.value;
-                    let interestRate = '';
+            loanList.innerHTML = ''; // clear old entries
 
-                    switch (selectedType) {
-                        case 'personal':
-                            interestRate = '15.00';
-                            break;
-                        case 'home':
-                            interestRate = '10.00';
-                            break;
-                        case 'education':
-                            interestRate = '5.00';
-                            break;
-                        default:
-                            interestRate = '';
-                    }
-
-                    interestRateInput.value = interestRate;
-                });
+            if (!Array.isArray(applications) || applications.length === 0) {
+                noLoansMessage.style.display = 'block';
+                loanStatusTable.style.display = 'none';
+                return;
             }
 
+            noLoansMessage.style.display = 'none';
+            loanStatusTable.style.display = 'table';
 
-            // ================================
-            // INSURANCE APPLICATION FUNCTIONALITY
-            // ================================
-
-            /**
-             * Handles the insurance application form submission.
-             * @param {Event} event The form submit event.
-             */
-            async function handleInsuranceApplication(event) {
-                event.preventDefault();
-                const form = event.target;
-                const formData = new FormData(form);
-                const insuranceBtn = document.getElementById('insuranceBtn');
-                setButtonLoading(insuranceBtn, true, 'Applying...');
-
-                try {
-                    const insuranceData = {
-                        insurance_type: formData.get('insurance_type'),
-                        premium: parseFloat(formData.get('premium')),
-                        coverage_amount: parseFloat(formData.get('coverage_amount')),
-                        duration_years: parseInt(formData.get('duration_years'))
-                    };
-
-                    const res = await requireAuthFetch('/insurance/apply', { 
-                        method: 'POST', 
-                        body: insuranceData 
-                    });
-                    if (!res.ok) {
-                        const errorBody = await res.json();
-                        throw new Error(errorBody.message || 'Insurance application failed');
-                    }
-                    showNotification('Insurance application submitted successfully!', 'success');
-                    form.reset();
-                    loadTransactionHistory();
-                } catch (error) {
-                    console.error('Insurance application failed:', error);
-                    showNotification(error.message || 'Insurance application failed. Please try again.', 'error');
-                } finally {
-                    setButtonLoading(insuranceBtn, false);
-                }
-            }
-
-            // ================================
-            // TRANSACTION HISTORY
-            // ================================
-
-            /**
-             * Fetches and displays the user's transaction history.
-             */
-            async function loadTransactionHistory() {
-                try {
-                    const res = await requireAuthFetch(`/api/accounts/${userAccountId}/history`);
-                    const data = await res.json();
-                    console.log("Transactions parsed:", data);
-
-                    const transactions = data.transactions || data || []; // handle both shapes
-                    const transactionList = document.getElementById('transactionList');
-                    const noTransactionsMessage = document.getElementById('noTransactionsMessage');
-                    const transactionsTable = document.getElementById('transactionsTable');
-
-                    transactionList.innerHTML = ''; // clear old entries
-
-                    if (!Array.isArray(transactions) || transactions.length === 0) {
-                        noTransactionsMessage.style.display = 'block';
-                        transactionsTable.style.display = 'none';
-                        return;
-                    }
-
-                    noTransactionsMessage.style.display = 'none';
-                    transactionsTable.style.display = 'table';
-
-                    transactions.forEach(tx => {
-                        const row = document.createElement('tr');
-                        let fromTo;
-
-                        if (tx.type === 'deposit') {
-                            fromTo = `Self → Self`;
-                        } else if (tx.type === 'withdraw') {
-                            fromTo = `Self → Self`;
-                        } else if (tx.type === 'transfer') {
-                            if (String(tx.from_account) === String(userAccountNumber)) {
-                                fromTo = `Self → ${tx.to_account}`;
-                            } else {
-                                fromTo = `${tx.from_account} → Self`;
-                            }
-                        } else {
-                            fromTo = 'Unknown';
-                        }
-
-                        const amount = parseFloat(tx.amount);
-                        const isCredit = tx.type === 'deposit' || (tx.type === 'transfer' && String(tx.to_account) === String(userAccountNumber));
-                        const sign = isCredit ? '+' : '-';
-                        const cssClass = isCredit ? 'credit' : 'debit';
-
-                        row.innerHTML = `
-                            <td>${fromTo}</td>
-                            <td class="${cssClass}">${sign}${formatCurrency(amount)}</td>
-                        `;
-
-                        transactionList.appendChild(row);
-                    });
-
-                } catch (error) {
-                    console.error('Failed to load transaction history:', error);
-                    showNotification('Failed to load transaction history.', 'error');
-                }
-            }
-
-
-
-
-            // ================================
-            // UTILITY FUNCTIONS
-            // ================================
-
-            /**
-             * Refreshes the account balance and provides a user notification.
-             */
-            async function refreshBalance() {
-                await loadAccountBalance();
-                showNotification('Balance refreshed!', 'success');
-            }
-
-            /**
-             * Logs out the user and redirects to the login page.
-             */
-            function logout() {
-                requireAuthFetch('/auth/logout', { method: 'POST' })
-                    .then(() => {
-                        showNotification('Logged out successfully', 'success');
-                        window.location.href = 'login.html'; 
-                    })
-                    .catch(() => {
-                        window.location.href = 'login.html';
-                    });
-            }
-
-            /**
-             * Scrolls the page to a specified section.
-             * @param {string} sectionId The ID of the section to scroll to.
-             */
-            function scrollToSection(sectionId) {
-                document.getElementById(sectionId).scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-            }
-
-            /**
-             * Formats a number as an Indian Rupee currency string.
-             * @param {number} amount The amount to format.
-             * @returns {string} The formatted currency string.
-             */
-            function formatCurrency(amount) {
-                return new Intl.NumberFormat('en-IN', {
-                    style: 'currency',
-                    currency: 'INR'
-                }).format(amount);
-            }
-
-            /**
-             * Displays a temporary notification to the user.
-             * @param {string} message The message to display.
-             * @param {string} type The type of notification ('success' or 'error').
-             */
-            function showNotification(message, type) {
-                const notification = document.getElementById('notification');
-                if (!notification) return; // Prevent errors if the element doesn't exist
-                notification.textContent = message;
-                notification.className = `notification show ${type}`;
-                setTimeout(() => {
-                    notification.className = 'notification';
-                }, 3000);
-            }
-
-            /**
-             * Sets the loading state for a button.
-             * @param {HTMLElement} button The button element.
-             * @param {boolean} isLoading Whether to set the loading state.
-             * @param {string} loadingText The text to display while loading.
-             */
-            function setButtonLoading(button, isLoading, loadingText = 'Processing...') {
-                if (!button) return; // Prevent errors if the element doesn't exist
-                if (isLoading) {
-                    button.dataset.originalText = button.textContent.trim();
-                    button.innerHTML = `<span class="loading"></span> ${loadingText}`;
-                    button.disabled = true;
-                } else {
-                    button.innerHTML = button.dataset.originalText;
-                    button.disabled = false;
-                }
-            }
-
-            // Save original button text on page load
-            document.addEventListener('DOMContentLoaded', () => {
-                const buttons = document.querySelectorAll('.submit-btn, .action-btn');
-                buttons.forEach(btn => {
-                    btn.dataset.originalText = btn.textContent.trim();
-                });
+            applications.forEach(app => {
+                const row = document.createElement('tr');
+                const emi = app.status === 'approved' ? calculateEMI(app.amount, app.interest_rate, app.duration_months) : 0;
+                
+                row.innerHTML = `
+                    <td>${app.loan_type}</td>
+                    <td>${formatCurrency(app.amount)}</td>
+                    <td class="transaction-type ${app.status === 'approved' ? 'credit' : 'debit'}">${app.status}</td>
+                    <td>${formatCurrency(emi)}/mo</td>
+                `;
+                loanList.appendChild(row);
             });
-        </script>
+        } catch (error) {
+            console.error('Failed to load loan status:', error);
+            showNotification('Failed to load loan status.', 'error');
+        }
+    }
+
+    /**
+     * Handles the loan application form submission.
+     * @param {Event} event The form submit event.
+     */
+    async function handleLoanApplication(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const loanBtn = document.getElementById('loanBtn');
+        setButtonLoading(loanBtn, true, 'Applying...');
+
+        try {
+            const loanData = {
+                amount: parseFloat(formData.get('amount')),
+                loan_type: formData.get('loan_type'),
+                interest_rate: parseFloat(formData.get('interest_rate')),
+                duration_months: parseInt(formData.get('duration_months'))
+            };
+
+            const res = await requireAuthFetch('/api/loan/apply', { 
+                method: 'POST', 
+                body: loanData 
+            });
+            if (!res.ok) {
+                const errorBody = await res.json();
+                throw new Error(errorBody.message || 'Loan application failed');
+            }
+            showNotification('Loan application submitted successfully!', 'success');
+            form.reset();
+            await loadLoanStatus();
+        } catch (error) {
+            console.error('Loan application failed:', error);
+            showNotification(error.message || 'Loan application failed. Please try again.', 'error');
+        } finally {
+            setButtonLoading(loanBtn, false);
+        }
+    }
+    
+    // Wires up the loan form to automatically set interest rates
+    function wireLoanForm() {
+        const loanTypeSelect = document.getElementById('loanType');
+        const interestRateInput = document.getElementById('interestRate');
+
+        loanTypeSelect.addEventListener('change', (event) => {
+            const selectedType = event.target.value;
+            let interestRate = '';
+
+            switch (selectedType) {
+                case 'personal':
+                    interestRate = '15.00';
+                    break;
+                case 'home':
+                    interestRate = '10.00';
+                    break;
+                case 'education':
+                    interestRate = '5.00';
+                    break;
+                default:
+                    interestRate = '';
+            }
+
+            interestRateInput.value = interestRate;
+        });
+    }
+
+    // ================================
+    // INSURANCE APPLICATION FUNCTIONALITY
+    // ================================
+
+    /**
+     * Handles the insurance application form submission.
+     * @param {Event} event The form submit event.
+     */
+    async function handleInsuranceApplication(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const insuranceBtn = document.getElementById('insuranceBtn');
+        setButtonLoading(insuranceBtn, true, 'Applying...');
+
+        try {
+            const insuranceData = {
+                insurance_type: formData.get('insurance_type'),
+                premium: parseFloat(formData.get('premium')),
+                coverage_amount: parseFloat(formData.get('coverage_amount')),
+                duration_years: parseInt(formData.get('duration_years'))
+            };
+
+            const res = await requireAuthFetch('/insurance/apply', { 
+                method: 'POST', 
+                body: insuranceData 
+            });
+            if (!res.ok) {
+                const errorBody = await res.json();
+                throw new Error(errorBody.message || 'Insurance application failed');
+            }
+            showNotification('Insurance application submitted successfully!', 'success');
+            form.reset();
+            loadTransactionHistory();
+        } catch (error) {
+            console.error('Insurance application failed:', error);
+            showNotification(error.message || 'Insurance application failed. Please try again.', 'error');
+        } finally {
+            setButtonLoading(insuranceBtn, false);
+        }
+    }
+
+    // ================================
+    // TRANSACTION HISTORY
+    // ================================
+
+    /**
+     * Fetches and displays the user's transaction history.
+     */
+    async function loadTransactionHistory() {
+        try {
+            const res = await requireAuthFetch(`/api/accounts/${userAccountId}/history`);
+            const data = await res.json();
+            console.log("Transactions parsed:", data);
+
+            const transactions = data.transactions || data || []; // handle both shapes
+            const transactionList = document.getElementById('transactionList');
+            const noTransactionsMessage = document.getElementById('noTransactionsMessage');
+            const transactionsTable = document.getElementById('transactionsTable');
+
+            transactionList.innerHTML = ''; // clear old entries
+
+            if (!Array.isArray(transactions) || transactions.length === 0) {
+                noTransactionsMessage.style.display = 'block';
+                transactionsTable.style.display = 'none';
+                return;
+            }
+
+            noTransactionsMessage.style.display = 'none';
+            transactionsTable.style.display = 'table';
+
+            transactions.forEach(tx => {
+                const row = document.createElement('tr');
+                let fromTo;
+
+                if (tx.type === 'loan') {
+                    fromTo = `Bank → Self (Loan)`;
+                } else if (tx.type === 'deposit') {
+                    fromTo = `Self → Self`;
+                } else if (tx.type === 'withdraw') {
+                    fromTo = `Self → Self`;
+                } else if (tx.type === 'transfer') {
+                    if (String(tx.from_account) === String(userAccountNumber)) {
+                        fromTo = `Self → ${tx.to_account}`;
+                    } else {
+                        fromTo = `${tx.from_account} → Self`;
+                    }
+                } else {
+                    fromTo = 'Unknown';
+                }
+
+                const amount = parseFloat(tx.amount);
+                const isCredit = tx.type === 'deposit' || tx.type === 'loan' || (tx.type === 'transfer' && String(tx.to_account) === String(userAccountNumber));
+                const sign = isCredit ? '+' : '-';
+                const cssClass = isCredit ? 'credit' : 'debit';
+
+                row.innerHTML = `
+                    <td>${fromTo}</td>
+                    <td class="${cssClass}">${sign}${formatCurrency(amount)}</td>
+                `;
+
+                transactionList.appendChild(row);
+            });
+
+        } catch (error) {
+            console.error('Failed to load transaction history:', error);
+            showNotification('Failed to load transaction history.', 'error');
+        }
+    }
+
+    // ================================
+    // UTILITY FUNCTIONS
+    // ================================
+
+    /**
+     * Refreshes the account balance and provides a user notification.
+     */
+    async function refreshBalance() {
+        await loadAccountBalance();
+        showNotification('Balance refreshed!', 'success');
+    }
+
+    /**
+     * Logs out the user and redirects to the login page.
+     */
+    function logout() {
+        requireAuthFetch('/auth/logout', { method: 'POST' })
+            .then(() => {
+                showNotification('Logged out successfully', 'success');
+                window.location.href = 'login.html'; 
+            })
+            .catch(() => {
+                window.location.href = 'login.html';
+            });
+    }
+
+    /**
+     * Scrolls the page to a specified section.
+     * @param {string} sectionId The ID of the section to scroll to.
+     */
+    function scrollToSection(sectionId) {
+        document.getElementById(sectionId).scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+    }
+
+    /**
+     * Formats a number as an Indian Rupee currency string.
+     * @param {number} amount The amount to format.
+     * @returns {string} The formatted currency string.
+     */
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR'
+        }).format(amount);
+    }
+
+    /**
+     * Displays a temporary notification to the user.
+     * @param {string} message The message to display.
+     * @param {string} type The type of notification ('success' or 'error').
+     */
+    function showNotification(message, type) {
+        const notification = document.getElementById('notification');
+        if (!notification) return; // Prevent errors if the element doesn't exist
+        notification.textContent = message;
+        notification.className = `notification show ${type}`;
+        setTimeout(() => {
+            notification.className = 'notification';
+        }, 3000);
+    }
+
+    /**
+     * Sets the loading state for a button.
+     * @param {HTMLElement} button The button element.
+     * @param {boolean} isLoading Whether to set the loading state.
+     * @param {string} loadingText The text to display while loading.
+     */
+    function setButtonLoading(button, isLoading, loadingText = 'Processing...') {
+        if (!button) return; // Prevent errors if the element doesn't exist
+        if (isLoading) {
+            button.dataset.originalText = button.textContent.trim();
+            button.innerHTML = `<span class="loading"></span> ${loadingText}`;
+            button.disabled = true;
+        } else {
+            button.innerHTML = button.dataset.originalText;
+            button.disabled = false;
+        }
+    }
+
+    // Save original button text on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const buttons = document.querySelectorAll('.submit-btn, .action-btn');
+        buttons.forEach(btn => {
+            btn.dataset.originalText = btn.textContent.trim();
+        });
+    });
+</script>
 </body>
 </html>
