@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Banking Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS remains the same as your original file for a consistent look. */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .welcome-text {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(238, 90, 82, 0.4);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #2196F3, #21CBF3);
+            border-radius: 20px;
+            padding: 35px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(33, 150, 243, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-20px, -20px) rotate(10deg); }
+        }
+
+        .balance-title {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .balance-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .account-number {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(31, 38, 135, 0.5);
+        }
+
+        .action-btn i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .action-btn span {
+            display: block;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(31, 38, 135, 0.5);
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .service-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .deposit-icon { background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .withdraw-icon { background: linear-gradient(135deg, #f44336, #d32f2f); }
+        .transfer-icon { background: linear-gradient(135deg, #2196F3, #1976d2); }
+        .loan-icon { background: linear-gradient(135deg, #ff9800, #f57c00); }
+        .insurance-icon { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
+        .history-icon { background: linear-gradient(135deg, #3f51b5, #303f9f); }
+
+        .service-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .transaction-table th, .transaction-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .transaction-table th {
+            font-weight: 700;
+            background-color: #f4f4f4;
+            color: #555;
+        }
+
+        .transaction-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .transaction-table .transaction-type.deposit {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .transaction-table .transaction-type.withdraw,
+        .transaction-table .transaction-type.transfer {
+            color: #f44336;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .balance-amount {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Premium Banking</h1>
+            <div class="user-info">
+                <div class="welcome-text">
+                    Welcome back, <span id="userName">John Doe</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="balance-card">
+                <div class="balance-title">Available Balance</div>
+                <div class="balance-amount" id="accountBalance">$0.00</div>
+                <div class="account-number">Account: <span id="accountNumber">****-****-1234</span></div>
+            </div>
+
+            <div class="quick-actions">
+                <button class="action-btn" onclick="scrollToSection('deposit')">
+                    <i>💰</i>
+                    <span>Deposit</span>
+                </button>
+                <button class="action-btn" onclick="scrollToSection('withdraw')">
+                    <i>💸</i>
+                    <span>Withdraw</span>
+                </button>
+                <button class="action-btn" onclick="scrollToSection('transfer')">
+                    <i>🔄</i>
+                    <span>Transfer</span>
+                </button>
+                <button class="action-btn" onclick="refreshBalance()">
+                    <i>🔁</i>
+                    <span>Refresh</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="services-grid">
+            <div class="service-card" id="deposit">
+                <div class="service-header">
+                    <div class="service-icon deposit-icon">💰</div>
+                    <div class="service-title">Deposit Funds</div>
+                </div>
+                <form id="depositForm" onsubmit="handleDeposit(event)">
+                    <div class="form-group">
+                        <label for="depositAmount">Enter Amount ($)</label>
+                        <input type="number" id="depositAmount" name="amount" step="0.01" min="1" required>
+                    </div>
+                    <button type="submit" class="submit-btn" id="depositBtn">
+                        Deposit
+                    </button>
+                </form>
+            </div>
+
+            <div class="service-card" id="withdraw">
+                <div class="service-header">
+                    <div class="service-icon withdraw-icon">💸</div>
+                    <div class="service-title">Withdraw Funds</div>
+                </div>
+                <form id="withdrawForm" onsubmit="handleWithdraw(event)">
+                    <div class="form-group">
+                        <label for="withdrawAmount">Amount ($)</label>
+                        <input type="number" id="withdrawAmount" name="amount" step="0.01" min="1" required>
+                    </div>
+                    <button type="submit" class="submit-btn" id="withdrawBtn">
+                        Withdraw
+                    </button>
+                </form>
+            </div>
+
+            <div class="service-card" id="transfer">
+                <div class="service-header">
+                    <div class="service-icon transfer-icon">🔄</div>
+                    <div class="service-title">Transfer Money</div>
+                </div>
+                <form id="transferForm" onsubmit="handleTransfer(event)">
+                    <div class="form-group">
+                        <label for="transferAmount">Amount ($)</label>
+                        <input type="number" id="transferAmount" name="amount" step="0.01" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipientAccount">Account ID</label>
+                        <input type="text" id="recipientAccount" name="account_id" placeholder="Enter recipient account ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipientName">Holder Name</label>
+                        <input type="text" id="recipientName" name="holder_name" placeholder="Enter account holder name" required>
+                    </div>
+                    <button type="submit" class="submit-btn" id="transferBtn">
+                        Transfer
+                    </button>
+                </form>
+            </div>
+
+            <div class="service-card" id="loan">
+                <div class="service-header">
+                    <div class="service-icon loan-icon">🏠</div>
+                    <div class="service-title">Apply for Loan</div>
+                </div>
+                <form id="loanForm" onsubmit="handleLoanApplication(event)">
+                    <div class="form-group">
+                        <label for="loanAmount">Amount ($)</label>
+                        <input type="number" id="loanAmount" name="amount" step="1000" min="1000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loanType">Loan Type</label>
+                        <input type="text" id="loanType" name="loan_type" placeholder="e.g., Personal, Home, Auto" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="interestRate">Interest Rate (%)</label>
+                        <input type="number" id="interestRate" name="interest_rate" step="0.01" min="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loanDuration">Duration (months)</label>
+                        <input type="number" id="loanDuration" name="duration_months" step="1" min="1" required>
+                    </div>
+                    <button type="submit" class="submit-btn" id="loanBtn">
+                        Apply for Loan
+                    </button>
+                </form>
+            </div>
+
+            <div class="service-card" id="insurance">
+                <div class="service-header">
+                    <div class="service-icon insurance-icon">🛡️</div>
+                    <div class="service-title">Apply for Insurance</div>
+                </div>
+                <form id="insuranceForm" onsubmit="handleInsuranceApplication(event)">
+                    <div class="form-group">
+                        <label for="insuranceType">Insurance Type</label>
+                        <input type="text" id="insuranceType" name="insurance_type" placeholder="e.g., Life, Health, Auto" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="premiumAmount">Premium ($)</label>
+                        <input type="number" id="premiumAmount" name="premium" step="0.01" min="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="coverageAmount">Coverage Amount ($)</label>
+                        <input type="number" id="coverageAmount" name="coverage_amount" step="1000" min="1000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="insuranceDuration">Duration (years)</label>
+                        <input type="number" id="insuranceDuration" name="duration_years" step="1" min="1" required>
+                    </div>
+                    <button type="submit" class="submit-btn" id="insuranceBtn">
+                        Apply for Insurance
+                    </button>
+                </form>
+            </div>
+            
+            <div class="service-card" id="transaction-history">
+                <div class="service-header">
+                    <div class="service-icon history-icon">📜</div>
+                    <div class="service-title">Transaction History</div>
+                </div>
+                <div class="transaction-history-container">
+                    <p id="noTransactionsMessage" style="text-align: center; color: #999;">No transactions found.</p>
+                    <table class="transaction-table" id="transactionsTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionList">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+    <script>
+
+
+let userAccountId = null;
+let userAccountNumber = null;
+
+
+// ================================
+// BACKEND INTEGRATION SECTION
+// ================================
+// TODO: Replace with your actual backend API base URL
+const API_BASE_URL = 'http://localhost:3000';
+
+// ---- Auth/session endpoints (adjust if backend differs) ----
+const AUTH_ME = `${API_BASE_URL}/api/auth/me`;
+const AUTH_LOGOUT = `${API_BASE_URL}/api/auth/logout`;
+const ACCOUNTS_BASE = `${API_BASE_URL}/api/accounts`;
+const LOANS_BASE = `${API_BASE_URL}/api/loans`;
+const INSURANCE_BASE = `${API_BASE_URL}/api/insurance`;
+const TRANSACTIONS_BASE = `${API_BASE_URL}/api/transactions`; // New endpoint for transactions
+
+/**
+ * A session-aware fetch wrapper that handles authentication.
+ * @param {string} endpoint The API endpoint to call.
+ * @param {object} opts Fetch options, including method, headers, and body.
+ * @returns {Promise<Response>} The fetch response object.
+ */
+async function requireAuthFetch(endpoint, opts = {}) {
+    opts.credentials = 'include'; // include session cookie
+    opts.headers = opts.headers || {};
+
+    if (opts.body && typeof opts.body === 'object' && !(opts.body instanceof FormData)) {
+        opts.headers['Content-Type'] = 'application/json';
+        opts.body = JSON.stringify(opts.body);
+    }
+
+    const res = await fetch(`${API_BASE_URL}${endpoint}`, opts);
+
+    if (res.status === 401) {
+        // Session expired or unauthorized -> redirect to login page
+        window.location.href = 'login.html'; // TODO: change if login page has a different path
+        throw new Error('Unauthorized');
+    }
+
+    return res;
+}
+
+// ================================
+// INITIALIZATION
+// ================================
+
+document.addEventListener('DOMContentLoaded', async function() {
+   await loadUserData();
+   await loadAccountBalance();
+   await loadTransactionHistory(); // Load history on page load
+});
+
+/**
+ * Fetches and displays user data from the backend.
+ */
+async function loadUserData() {
+    try {
+        const res = await requireAuthFetch('/api/auth/me');
+        const data = await res.json();
+        console.log('Account object:', data);
+
+
+        // Populate global variables
+        userAccountId =  data.account?.account_id;
+    
+        userAccountNumber =  data.account?.account_number; 
+
+        // Update the UI with the fetched data
+        document.getElementById('userName').textContent = data.user?.name || 'User';
+        document.getElementById('accountNumber').textContent = userAccountNumber || '****-****-1234';
+    } catch (error) {
+        console.error('Failed to load user data:', error);
+        showNotification('Failed to load user data.', 'error');
+    }
+}
+
+/**
+ * Fetches and updates the account balance.
+ */
+async function loadAccountBalance() {
+    try {
+        if (!userAccountId) {
+            console.warn('User Account ID not available. Cannot load balance.');
+            return;
+        }
+
+        const res = await requireAuthFetch(`/api/accounts/${userAccountId}/balance`); 
+        const data = await res.json();
+
+        console.log("API raw response:", data);
+        console.log("Balance type:", typeof data.balance, "Value:", data.balance);
+
+        const balanceValue = parseFloat(data.balance);
+        console.log("Parsed balance:", balanceValue);
+
+        document.getElementById('accountBalance').textContent = formatCurrency(balanceValue);
+    } catch (error) {
+        console.error('Failed to load balance:', error);
+        showNotification('Failed to load account balance.', 'error');
+    }
+}
+
+// ================================
+// DEPOSIT FUNCTIONALITY
+// ================================
+
+/**
+ * Handles the deposit form submission.
+ * @param {Event} event The form submit event.
+ */
+async function handleDeposit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const depositBtn = document.getElementById('depositBtn');
+    setButtonLoading(depositBtn, true, 'Depositing...'); 
+
+    try {
+        const depositData = {
+            amount: parseFloat(formData.get('amount'))
+        };
+
+        const res = await requireAuthFetch(`/api/accounts/${userAccountId}/deposit`, {
+            method: 'POST',
+            body: depositData
+        });
+        if (!res.ok) {
+            const errorBody = await res.json();
+            throw new Error(errorBody.message || 'Deposit failed');
+        }
+        showNotification('Deposit successful!', 'success');
+        form.reset();
+        loadAccountBalance();
+        loadTransactionHistory();
+    } catch (error) {
+        console.error('Deposit failed:', error);
+        showNotification(error.message || 'Deposit failed. Please try again.', 'error');
+    } finally {
+        setButtonLoading(depositBtn, false);
+    }
+}
+
+// ================================
+// WITHDRAW FUNCTIONALITY
+// ================================
+
+/**
+ * Handles the withdraw form submission.
+ * @param {Event} event The form submit event.
+ */
+async function handleWithdraw(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const withdrawBtn = document.getElementById('withdrawBtn');
+    setButtonLoading(withdrawBtn, true, 'Withdrawing...');
+
+    try {
+        const withdrawData = {
+            amount: parseFloat(formData.get('amount'))
+        };
+
+        const res = await requireAuthFetch(`/api/accounts/${userAccountId}/withdraw`, {
+            method: 'POST',
+            body: withdrawData
+        });
+        if (!res.ok) {
+            const errorBody = await res.json();
+            throw new Error(errorBody.message || 'Withdrawal failed');
+        }
+        showNotification('Withdrawal successful!', 'success');
+        form.reset();
+        loadAccountBalance();
+        loadTransactionHistory();
+    } catch (error) {
+        console.error('Withdrawal failed:', error);
+        showNotification(error.message || 'Withdrawal failed. Please check your balance.', 'error');
+    } finally {
+        setButtonLoading(withdrawBtn, false);
+    }
+}
+
+// ================================
+// TRANSFER FUNCTIONALITY
+// ================================
+
+/**
+ * Handles the transfer form submission.
+ * @param {Event} event The form submit event.
+ */
+async function handleTransfer(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const transferBtn = document.getElementById('transferBtn');
+    setButtonLoading(transferBtn, true, 'Transferring...');
+
+    try {
+        const transferData = {
+            amount: parseFloat(formData.get('amount')),
+            account_id: formData.get('account_id'),
+            holder_name: formData.get('holder_name')
+        };
+
+        const res = await requireAuthFetch('/transactions/transfer', {
+            method: 'POST',
+            body: transferData
+        });
+        if (!res.ok) {
+            const errorBody = await res.json();
+            throw new Error(errorBody.message || 'Transfer failed');
+        }
+        showNotification('Transfer successful!', 'success');
+        form.reset();
+        loadAccountBalance();
+        loadTransactionHistory();
+    } catch (error) {
+        console.error('Transfer failed:', error);
+        showNotification(error.message || 'Transfer failed. Please check recipient details and balance.', 'error');
+    } finally {
+        setButtonLoading(transferBtn, false);
+    }
+}
+
+// ================================
+// LOAN APPLICATION FUNCTIONALITY
+// ================================
+
+/**
+ * Handles the loan application form submission.
+ * @param {Event} event The form submit event.
+ */
+async function handleLoanApplication(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const loanBtn = document.getElementById('loanBtn');
+    setButtonLoading(loanBtn, true, 'Applying...');
+
+    try {
+        const loanData = {
+            amount: parseFloat(formData.get('amount')),
+            loan_type: formData.get('loan_type'),
+            interest_rate: parseFloat(formData.get('interest_rate')),
+            duration_months: parseInt(formData.get('duration_months'))
+        };
+
+        const res = await requireAuthFetch('/loans/apply', { 
+            method: 'POST', 
+            body: loanData 
+        });
+        if (!res.ok) {
+            const errorBody = await res.json();
+            throw new Error(errorBody.message || 'Loan application failed');
+        }
+        showNotification('Loan application submitted successfully!', 'success');
+        form.reset();
+        loadTransactionHistory();
+    } catch (error) {
+        console.error('Loan application failed:', error);
+        showNotification(error.message || 'Loan application failed. Please try again.', 'error');
+    } finally {
+        setButtonLoading(loanBtn, false);
+    }
+}
+
+// ================================
+// INSURANCE APPLICATION FUNCTIONALITY
+// ================================
+
+/**
+ * Handles the insurance application form submission.
+ * @param {Event} event The form submit event.
+ */
+async function handleInsuranceApplication(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const insuranceBtn = document.getElementById('insuranceBtn');
+    setButtonLoading(insuranceBtn, true, 'Applying...');
+
+    try {
+        const insuranceData = {
+            insurance_type: formData.get('insurance_type'),
+            premium: parseFloat(formData.get('premium')),
+            coverage_amount: parseFloat(formData.get('coverage_amount')),
+            duration_years: parseInt(formData.get('duration_years'))
+        };
+
+        const res = await requireAuthFetch('/insurance/apply', { 
+            method: 'POST', 
+            body: insuranceData 
+        });
+        if (!res.ok) {
+            const errorBody = await res.json();
+            throw new Error(errorBody.message || 'Insurance application failed');
+        }
+        showNotification('Insurance application submitted successfully!', 'success');
+        form.reset();
+        loadTransactionHistory();
+    } catch (error) {
+        console.error('Insurance application failed:', error);
+        showNotification(error.message || 'Insurance application failed. Please try again.', 'error');
+    } finally {
+        setButtonLoading(insuranceBtn, false);
+    }
+}
+
+// ================================
+// TRANSACTION HISTORY
+// ================================
+
+/**
+ * Fetches and displays the user's transaction history.
+ */
+async function loadTransactionHistory() {
+    try {
+        const res = await requireAuthFetch(`/api/accounts/${userAccountId}/history`); 
+        const transactions = await res.json();
+        
+        const transactionList = document.getElementById('transactionList');
+        const noTransactionsMessage = document.getElementById('noTransactionsMessage');
+        const transactionsTable = document.getElementById('transactionsTable');
+        
+        transactionList.innerHTML = ''; // Clear previous entries
+        
+        if (transactions.length === 0) {
+            noTransactionsMessage.style.display = 'block';
+            transactionsTable.style.display = 'none';
+        } else {
+            noTransactionsMessage.style.display = 'none';
+            transactionsTable.style.display = 'table';
+            transactions.forEach(tx => {
+                const row = document.createElement('tr');
+                const typeClass = tx.type.toLowerCase();
+                
+                row.innerHTML = `
+                    <td>${new Date(tx.date).toLocaleDateString()}</td>
+                    <td class="transaction-type ${typeClass}">${tx.type}</td>
+                    <td>${formatCurrency(tx.amount)}</td>
+                    <td>${tx.description || '-'}</td>
+                `;
+                transactionList.appendChild(row);
+            });
+        }
+    } catch (error) {
+        console.error('Failed to load transaction history:', error);
+        showNotification('Failed to load transaction history.', 'error');
+    }
+}
+
+// ================================
+// UTILITY FUNCTIONS
+// ================================
+
+/**
+ * Refreshes the account balance and provides a user notification.
+ */
+async function refreshBalance() {
+    await loadAccountBalance();
+    showNotification('Balance refreshed!', 'success');
+}
+
+/**
+ * Logs out the user and redirects to the login page.
+ */
+function logout() {
+    requireAuthFetch('/auth/logout', { method: 'POST' })
+        .then(() => {
+            showNotification('Logged out successfully', 'success');
+            window.location.href = 'login.html'; 
+        })
+        .catch(() => {
+            window.location.href = 'login.html';
+        });
+}
+
+/**
+ * Scrolls the page to a specified section.
+ * @param {string} sectionId The ID of the section to scroll to.
+ */
+function scrollToSection(sectionId) {
+    document.getElementById(sectionId).scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+    });
+}
+
+/**
+ * Formats a number as an Indian Rupee currency string.
+ * @param {number} amount The amount to format.
+ * @returns {string} The formatted currency string.
+ */
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR'
+    }).format(amount);
+}
+
+/**
+ * Displays a temporary notification to the user.
+ * @param {string} message The message to display.
+ * @param {string} type The type of notification ('success' or 'error').
+ */
+function showNotification(message, type) {
+    const notification = document.getElementById('notification');
+    if (!notification) return; // Prevent errors if the element doesn't exist
+    notification.textContent = message;
+    notification.className = `notification show ${type}`;
+    setTimeout(() => {
+        notification.className = 'notification';
+    }, 3000);
+}
+
+/**
+ * Sets the loading state for a button.
+ * @param {HTMLElement} button The button element.
+ * @param {boolean} isLoading Whether to set the loading state.
+ * @param {string} loadingText The text to display while loading.
+ */
+function setButtonLoading(button, isLoading, loadingText = 'Processing...') {
+    if (!button) return; // Prevent errors if the element doesn't exist
+    if (isLoading) {
+        button.dataset.originalText = button.textContent.trim();
+        button.innerHTML = `<span class="loading"></span> ${loadingText}`;
+        button.disabled = true;
+    } else {
+        button.innerHTML = button.dataset.originalText;
+        button.disabled = false;
+    }
+}
+
+// Save original button text on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('.submit-btn, .action-btn');
+    buttons.forEach(btn => {
+        btn.dataset.originalText = btn.textContent.trim();
+    });
+});
+</script>
+</body>
+</html>

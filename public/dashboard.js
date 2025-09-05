@@ -1,14 +1,17 @@
+
+
 // dashboard.js — improved, robust, modal-fixed version
 // IMPORTANT: set API_BASE to match your backend origin if different.
 // Example: const API_BASE = "http://localhost:5000";
-const API_BASE = 'http://localhost:3000'; // same-origin by default
+//const API_BASE = 'http://localhost:3000'; // same-origin by default
 
 // Routes (adjust if your backend mounts differently)
-const AUTH_ME = `${API_BASE}/api/auth/me`;
-const AUTH_LOGOUT = `${API_BASE}/api/auth/logout`;
-const ACCOUNTS_BASE = `${API_BASE}/api/accounts`; // use e.g. /api/accounts/:id/...
+//const AUTH_ME = `${API_BASE}/api/auth/me`;
+//const AUTH_LOGOUT = `${API_BASE}/api/auth/logout`;
+//const ACCOUNTS_BASE = `${API_BASE}/api/accounts`; // use e.g. /api/accounts/:id/...
 
 /* --------- DOM elements (assigned after DOMContentLoaded) --------- */
+/*
 let currentAccountId = null;
 let currentAccountNumber = null;
 let user = null;
@@ -16,8 +19,8 @@ let user = null;
 let userNameEl, userEmailEl, accNumberEl, balanceEl, createdAtEl, transactionsList;
 let logoutBtn, refreshBtn, cashAmount, cashType, cashSubmit, transferForm, toAccountId, transferAmount, transferSubmit;
 let modal, modalBody, modalConfirm, modalCancel, toast;
-
-/* Simple toast */
+*/
+/* Simple toast 
 function showToast(msg, timeout = 2500) {
   if (!toast) return alert(msg);
   toast.textContent = msg;
@@ -25,8 +28,8 @@ function showToast(msg, timeout = 2500) {
   clearTimeout(toast._t);
   toast._t = setTimeout(() => (toast.hidden = true), timeout);
 }
-
-/* Wrapper that sends credentials and handles 401 redirect */
+*/
+/* Wrapper that sends credentials and handles 401 redirect 
 async function requireAuthFetch(url, opts = {}) {
   opts.credentials = 'include';
   opts.headers = opts.headers || {};
@@ -43,8 +46,8 @@ async function requireAuthFetch(url, opts = {}) {
   return res;
 }
 
-/* ----- Modal helpers (use boolean hidden attribute) ----- */
-function hideModal() {
+ ----- Modal helpers (use boolean hidden attribute) ----- */
+/*function hideModal() {
   if (!modal) return;
   modal.hidden = true;
   modal.setAttribute('aria-hidden', 'true');
@@ -72,14 +75,14 @@ function onModalKeydown(e) {
       e.preventDefault();
     }
   }
-}
+}*/
 
 /**
  * showModal(html, onConfirm)
  * - html: innerHTML to put inside modal body
  * - onConfirm: async function executed when Confirm clicked
  */
-function showModal(html, onConfirm) {
+/*function showModal(html, onConfirm) {
   if (!modal || !modalBody) {
     console.error('Modal elements not available');
     return;
@@ -115,9 +118,9 @@ function showModal(html, onConfirm) {
     if (modalConfirm) modalConfirm.focus();
   }, 0);
 }
-
+*/
 /* ----- UX: Tabs ----- */
-function wireTabs() {
+/*function wireTabs() {
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -149,7 +152,7 @@ function wireTabs() {
   });
 }
 
-/* ----- Data loading ----- */
+/* ----- Data loading ----- 
 async function loadMe() {
   try {
     const res = await requireAuthFetch(AUTH_ME);
@@ -226,7 +229,7 @@ function renderTransactions(list) {
   });
 }
 
-/* ----- Format helpers ----- */
+ ----- Format helpers ----- 
 function formatCurrency(value) {
   const n = Number(value || 0);
   return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(n);
@@ -237,11 +240,11 @@ function formatDate(s) {
   return d.toLocaleString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
 }
 
-/* ----- Actions: logout, refresh, cash, transfer ----- */
+----- Actions: logout, refresh, cash, transfer ----- 
 async function doLogout() {
   try {
     await requireAuthFetch(AUTH_LOGOUT, { method: 'POST' });
-  } catch (e) { /* ignore */ }
+  } catch (e) {  ignore  }
   window.location.href = 'login.html';
 }
 
@@ -298,7 +301,7 @@ async function handleTransferSubmit() {
 }
 
 /* ----- Initialization ----- */
-document.addEventListener('DOMContentLoaded', () => {
+/*document.addEventListener('DOMContentLoaded', () => {
   // assign elements
   userNameEl = document.getElementById('userName');
   userEmailEl = document.getElementById('userEmail');
@@ -341,4 +344,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   wireTabs();
   loadMe();
-});
+});*/

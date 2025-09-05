@@ -2,6 +2,7 @@
 // Change this to your backend URL
 const API_BASE = "http://localhost:3000";  
 
+
  // same-origin. Set to 'https://api.example.com' if different.
 const form = document.getElementById('loginForm');
 const alertBox = document.getElementById('formAlert');
@@ -52,7 +53,7 @@ form.addEventListener('submit', async (e) => {
     }
 
     // success — redirect to dashboard
-    window.location.href = 'dashboard.html';
+    window.location.href = 'customer_dashboard.html';
   } catch (err) {
     showAlert('Network error. Check server and try again.');
     console.error(err);
