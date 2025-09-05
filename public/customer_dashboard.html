@@ -512,30 +512,30 @@
                     </button>
                 </form>
             </div>
-            
-            <div class="service-card" id="transaction-history">
-                <div class="service-header">
-                    <div class="service-icon history-icon">📜</div>
-                    <div class="service-title">Transaction History</div>
-                </div>
-                <div class="transaction-history-container">
-                    <p id="noTransactionsMessage" style="text-align: center; color: #999;">No transactions found.</p>
-                    <table class="transaction-table" id="transactionsTable" style="display: none;">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Type</th>
-                                <th>Amount</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionList">
-                            </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+       <div class="service-card" id="transaction-history">
+    <div class="service-header">
+        <div class="service-icon history-icon">📜</div>
+        <div class="service-title">Transaction History</div>
     </div>
+
+    <!-- Section Title -->
+    <h3 style="text-align: center; margin: 10px 0; color: #333;">Transaction History</h3>
+
+    <!-- Transactions -->
+    <div class="transaction-history-container">
+        <p id="noTransactionsMessage" style="text-align: center; color: #999;">No transactions found.</p>
+
+        <table class="transaction-table" id="transactionsTable" style="display: none; width: 100%; border-collapse: collapse; text-align: center;">
+            <thead>
+                <tr>
+                    <th>From → To</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody id="transactionList"></tbody>
+        </table>
+    </div>
+</div>
 
     <div id="notification" class="notification"></div>
     <script>
@@ -861,29 +861,45 @@ async function handleInsuranceApplication(event) {
 async function loadTransactionHistory() {
     try {
         const res = await requireAuthFetch(`/api/accounts/${userAccountId}/history`); 
-        const transactions = await res.json();
-        
+        const data = await res.json();
+
+        // ✅ Ensure we always get an array
+        const transactions = Array.isArray(data) ? data : data.transactions || [];
+
         const transactionList = document.getElementById('transactionList');
         const noTransactionsMessage = document.getElementById('noTransactionsMessage');
         const transactionsTable = document.getElementById('transactionsTable');
-        
-        transactionList.innerHTML = ''; // Clear previous entries
-        
+
+        transactionList.innerHTML = ''; // Clear old rows
+
         if (transactions.length === 0) {
             noTransactionsMessage.style.display = 'block';
             transactionsTable.style.display = 'none';
         } else {
             noTransactionsMessage.style.display = 'none';
             transactionsTable.style.display = 'table';
+
             transactions.forEach(tx => {
                 const row = document.createElement('tr');
-                const typeClass = tx.type.toLowerCase();
-                
+
+                let fromTo;
+                if (tx.type === 'deposit') {
+                    fromTo = `Self → Self`;
+                } else if (tx.type === 'withdraw') {
+                    fromTo = `Self → Self`;
+                } else if (tx.type === 'transfer') {
+                    if (tx.from_account_id === userAccountId) {
+                        fromTo = `Self → ${tx.to_account_id}`;
+                    } else {
+                        fromTo = `${tx.from_account_id} → Self`;
+                    }
+                } else {
+                    fromTo = '-';
+                }
+
                 row.innerHTML = `
-                    <td>${new Date(tx.date).toLocaleDateString()}</td>
-                    <td class="transaction-type ${typeClass}">${tx.type}</td>
+                    <td>${fromTo}</td>
                     <td>${formatCurrency(tx.amount)}</td>
-                    <td>${tx.description || '-'}</td>
                 `;
                 transactionList.appendChild(row);
             });
@@ -893,6 +909,8 @@ async function loadTransactionHistory() {
         showNotification('Failed to load transaction history.', 'error');
     }
 }
+
+
 
 // ================================
 // UTILITY FUNCTIONS
