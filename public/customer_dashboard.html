@@ -443,29 +443,26 @@
                 </form>
             </div>
 
-            <div class="service-card" id="transfer">
-                <div class="service-header">
-                    <div class="service-icon transfer-icon">🔄</div>
-                    <div class="service-title">Transfer Money</div>
-                </div>
-                <form id="transferForm" onsubmit="handleTransfer(event)">
-                    <div class="form-group">
-                        <label for="transferAmount">Amount ($)</label>
-                        <input type="number" id="transferAmount" name="amount" step="0.01" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="recipientAccount">Account ID</label>
-                        <input type="text" id="recipientAccount" name="account_id" placeholder="Enter recipient account ID" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="recipientName">Holder Name</label>
-                        <input type="text" id="recipientName" name="holder_name" placeholder="Enter account holder name" required>
-                    </div>
-                    <button type="submit" class="submit-btn" id="transferBtn">
-                        Transfer
-                    </button>
-                </form>
-            </div>
+<div class="service-card" id="transfer">
+    <div class="service-header">
+        <div class="service-icon transfer-icon">🔄</div>
+        <div class="service-title">Transfer Money</div>
+    </div>
+    <form id="transferForm" onsubmit="handleTransfer(event)">
+        <div class="form-group">
+            <label for="transferAmount">Amount ($)</label>
+            <input type="number" id="transferAmount" name="amount" step="0.01" min="1" required>
+        </div>
+        <div class="form-group">
+            <label for="recipientAccount">Account ID</label>
+            <input type="text" id="recipientAccount" name="account_id" placeholder="Enter recipient account ID" required>
+        </div>
+        <!-- Removed the Holder Name field -->
+        <button type="submit" class="submit-btn" id="transferBtn">
+            Transfer
+        </button>
+    </form>
+</div>
 
             <div class="service-card" id="loan">
                 <div class="service-header">
@@ -744,38 +741,51 @@ async function handleWithdraw(event) {
  * @param {Event} event The form submit event.
  */
 async function handleTransfer(event) {
-    event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
-    const transferBtn = document.getElementById('transferBtn');
-    setButtonLoading(transferBtn, true, 'Transferring...');
+  event.preventDefault();
+  const form = event.target;
+  const formData = new FormData(form);
+  const transferBtn = document.getElementById('transferBtn');
 
-    try {
-        const transferData = {
-            amount: parseFloat(formData.get('amount')),
-            account_id: formData.get('account_id'),
-            holder_name: formData.get('holder_name')
-        };
+  setButtonLoading(transferBtn, true, 'Transferring...');
 
-        const res = await requireAuthFetch('/transactions/transfer', {
-            method: 'POST',
-            body: transferData
-        });
-        if (!res.ok) {
-            const errorBody = await res.json();
-            throw new Error(errorBody.message || 'Transfer failed');
-        }
-        showNotification('Transfer successful!', 'success');
-        form.reset();
-        loadAccountBalance();
-        loadTransactionHistory();
-    } catch (error) {
-        console.error('Transfer failed:', error);
-        showNotification(error.message || 'Transfer failed. Please check recipient details and balance.', 'error');
-    } finally {
-        setButtonLoading(transferBtn, false);
+  try {
+    const amount = parseFloat(formData.get('amount'));
+    const toAccountId = (formData.get('account_id') || '').trim();
+
+    if (!toAccountId) throw new Error('Please enter recipient account ID.');
+    if (!amount || Number.isNaN(amount) || amount <= 0) throw new Error('Enter a valid amount.');
+    if (!userAccountId) throw new Error('Sender account not found. Please log in again.');
+
+    if (String(userAccountId) === toAccountId) {
+      throw new Error('Cannot transfer to the same account.');
     }
+
+    const endpoint = `/api/accounts/${userAccountId}/transfer/${toAccountId}`;
+    const body = { amount };
+
+    const res = await requireAuthFetch(endpoint, {
+      method: 'POST',
+      body
+    });
+
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.message || 'Transfer failed');
+    }
+
+    showNotification('Transfer successful!', 'success');
+    form.reset();
+    await loadAccountBalance();
+    await loadTransactionHistory();
+
+  } catch (error) {
+    console.error('Transfer failed:', error);
+    showNotification(error.message || 'Transfer failed.', 'error');
+  } finally {
+    setButtonLoading(transferBtn, false);
+  }
 }
+
 
 // ================================
 // LOAN APPLICATION FUNCTIONALITY
@@ -869,69 +879,66 @@ async function handleInsuranceApplication(event) {
  * Fetches and displays the user's transaction history.
  */
 async function loadTransactionHistory() {
-    try {
-        const res = await requireAuthFetch(`/api/accounts/${userAccountId}/history`); 
-        const data = await res.json();
+  try {
+    const res = await requireAuthFetch(`/api/accounts/${userAccountId}/history`);
+    const data = await res.json();
+    console.log("Transactions parsed:", data);
 
-        // ✅ Get the actual array from the response
-        const transactions = data.transactions || [];
+    const transactions = data.transactions || data || [];
+    const transactionList = document.getElementById('transactionList');
+    const noTransactionsMessage = document.getElementById('noTransactionsMessage');
+    const transactionsTable = document.getElementById('transactionsTable');
 
-        const transactionList = document.getElementById('transactionList');
-        const noTransactionsMessage = document.getElementById('noTransactionsMessage');
-        const transactionsTable = document.getElementById('transactionsTable');
+    transactionList.innerHTML = '';
 
-        transactionList.innerHTML = ''; // Clear previous entries
-
-        if (transactions.length === 0) {
-            noTransactionsMessage.style.display = 'block';
-            transactionsTable.style.display = 'none';
-        } else {
-            noTransactionsMessage.style.display = 'none';
-            transactionsTable.style.display = 'table';
-
-            transactions.forEach(tx => {
-                const row = document.createElement('tr');
-                let fromTo;
-                let amountDisplay;
-                let amountClass;
-
-                if (tx.type === 'deposit') {
-                    fromTo = `Self → Self`;
-                    amountDisplay = `+${formatCurrency(tx.amount)}`;
-                    amountClass = 'credit';
-                } else if (tx.type === 'withdraw') {
-                    fromTo = `Self → Self`;
-                    amountDisplay = `-${formatCurrency(tx.amount)}`;
-                    amountClass = 'debit';
-                } else if (tx.type === 'transfer') {
-                    if (tx.from_account_id === userAccountId) {
-                        fromTo = `Self → ${tx.to_account_id}`;
-                        amountDisplay = `-${formatCurrency(tx.amount)}`;
-                        amountClass = 'debit';
-                    } else {
-                        fromTo = `${tx.from_account_id} → Self`;
-                        amountDisplay = `+${formatCurrency(tx.amount)}`;
-                        amountClass = 'credit';
-                    }
-                } else {
-                    fromTo = '-';
-                    amountDisplay = formatCurrency(tx.amount);
-                    amountClass = '';
-                }
-
-                row.innerHTML = `
-                    <td>${fromTo}</td>
-                    <td class="${amountClass}">${amountDisplay}</td>
-                `;
-                transactionList.appendChild(row);
-            });
-        }
-    } catch (error) {
-        console.error('Failed to load transaction history:', error);
-        showNotification('Failed to load transaction history.', 'error');
+    if (!Array.isArray(transactions) || transactions.length === 0) {
+      noTransactionsMessage.style.display = 'block';
+      transactionsTable.style.display = 'none';
+      return;
     }
-}
 
+    noTransactionsMessage.style.display = 'none';
+    transactionsTable.style.display = 'table';
+
+    transactions.forEach(tx => {
+      const row = document.createElement('tr');
+      let fromTo;
+
+      if (tx.type === 'deposit') {
+        fromTo = `Self → Self`;
+      } else if (tx.type === 'withdraw') {
+        fromTo = `Self → Self`;
+      } else if (tx.type === 'transfer') {
+        // Correctly set fromTo based on whether it's an incoming or outgoing transfer
+        if (String(tx.from_account) === String(userAccountNumber)) {
+          // Outgoing transfer
+          fromTo = `Self → ${tx.to_account}`;
+        } else {
+          // Incoming transfer
+          fromTo = `${tx.from_account} → Self`;
+        }
+      } else {
+        fromTo = 'Unknown';
+      }
+
+      const amount = parseFloat(tx.amount);
+      const isCredit = (tx.type === 'deposit' || (tx.type === 'transfer' && String(tx.to_account) === String(userAccountNumber)));
+      const sign = isCredit ? '+' : '-';
+      const cssClass = isCredit ? 'credit' : 'debit';
+
+      row.innerHTML = `
+        <td>${fromTo}</td>
+        <td class="${cssClass}">${sign}${formatCurrency(amount)}</td>
+      `;
+
+      transactionList.appendChild(row);
+    });
+
+  } catch (error) {
+    console.error('Failed to load transaction history:', error);
+    showNotification('Failed to load transaction history.', 'error');
+  }
+}
 
 
 
