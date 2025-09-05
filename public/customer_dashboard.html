@@ -358,6 +358,15 @@
             .balance-amount {
                 font-size: 2.5rem;
             }
+            .credit {
+    color: green;
+    font-weight: bold;
+}
+.debit {
+    color: red;
+    font-weight: bold;
+}
+
         }
     </style>
 </head>
@@ -863,14 +872,14 @@ async function loadTransactionHistory() {
         const res = await requireAuthFetch(`/api/accounts/${userAccountId}/history`); 
         const data = await res.json();
 
-        // ✅ Ensure we always get an array
-        const transactions = Array.isArray(data) ? data : data.transactions || [];
+        // ✅ Get the actual array from the response
+        const transactions = data.transactions || [];
 
         const transactionList = document.getElementById('transactionList');
         const noTransactionsMessage = document.getElementById('noTransactionsMessage');
         const transactionsTable = document.getElementById('transactionsTable');
 
-        transactionList.innerHTML = ''; // Clear old rows
+        transactionList.innerHTML = ''; // Clear previous entries
 
         if (transactions.length === 0) {
             noTransactionsMessage.style.display = 'block';
@@ -881,25 +890,37 @@ async function loadTransactionHistory() {
 
             transactions.forEach(tx => {
                 const row = document.createElement('tr');
-
                 let fromTo;
+                let amountDisplay;
+                let amountClass;
+
                 if (tx.type === 'deposit') {
                     fromTo = `Self → Self`;
+                    amountDisplay = `+${formatCurrency(tx.amount)}`;
+                    amountClass = 'credit';
                 } else if (tx.type === 'withdraw') {
                     fromTo = `Self → Self`;
+                    amountDisplay = `-${formatCurrency(tx.amount)}`;
+                    amountClass = 'debit';
                 } else if (tx.type === 'transfer') {
                     if (tx.from_account_id === userAccountId) {
                         fromTo = `Self → ${tx.to_account_id}`;
+                        amountDisplay = `-${formatCurrency(tx.amount)}`;
+                        amountClass = 'debit';
                     } else {
                         fromTo = `${tx.from_account_id} → Self`;
+                        amountDisplay = `+${formatCurrency(tx.amount)}`;
+                        amountClass = 'credit';
                     }
                 } else {
                     fromTo = '-';
+                    amountDisplay = formatCurrency(tx.amount);
+                    amountClass = '';
                 }
 
                 row.innerHTML = `
                     <td>${fromTo}</td>
-                    <td>${formatCurrency(tx.amount)}</td>
+                    <td class="${amountClass}">${amountDisplay}</td>
                 `;
                 transactionList.appendChild(row);
             });
@@ -909,6 +930,7 @@ async function loadTransactionHistory() {
         showNotification('Failed to load transaction history.', 'error');
     }
 }
+
 
 
 
