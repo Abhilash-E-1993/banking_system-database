@@ -3,10 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Banking System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <title>BankApp — Next-Gen Authentication</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-glow: rgba(102, 126, 234, 0.4);
+            --secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --error: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+            
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            
+            --dark-bg: #0a0a0f;
+            --dark-surface: rgba(18, 18, 25, 0.8);
+            --dark-text: #ffffff;
+            --dark-muted: rgba(255, 255, 255, 0.7);
+            
+            --blur: blur(16px);
+            --radius: 20px;
+            --shadow-elevated: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,1524 +35,780 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1A202C 0%, #2D3748 100%);
-            color: #E2E8F0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--dark-text);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* Authentication Styles */
-        #auth-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            background: linear-gradient(135deg, #1A202C 0%, #2D3748 50%, #4A5568 100%);
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(245, 87, 108, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(79, 172, 254, 0.2) 0%, transparent 50%);
+            animation: backgroundShift 20s ease-in-out infinite;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="rgba(255,255,255,0.05)" fill-opacity="0.1"><circle cx="30" cy="30" r="1"/></g></g></svg>');
+            z-index: -1;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: -2s;
+        }
+
+        .floating-element:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            right: 10%;
+            animation-delay: -4s;
+        }
+
+        .floating-element:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            bottom: 10%;
+            left: 15%;
+            animation-delay: -1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Main Authentication Card */
+        .auth-container {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            perspective: 1000px;
         }
 
         .auth-card {
-            background: rgba(45, 55, 72, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 40px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease-in-out;
+            background: var(--dark-surface);
+            backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-elevated);
+            padding: 48px;
+            position: relative;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--accent);
+            opacity: 0.8;
         }
 
         .auth-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.4);
         }
 
-        .auth-header {
+        /* Header Section */
+        .card-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            position: relative;
         }
 
-        .auth-header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-        }
-
-        .auth-header p {
-            color: #A0AEC0;
-            font-weight: 300;
-        }
-
-        .auth-toggle {
-            display: flex;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .auth-toggle button {
-            flex: 1;
-            padding: 12px 20px;
-            background: transparent;
-            border: none;
-            color: #A0AEC0;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .auth-toggle button.active {
-            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-            color: white;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #E2E8F0;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: #E2E8F0;
-            font-size: 16px;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #3B82F6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease-in-out;
-            margin-top: 10px;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
-        }
-
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Dashboard Styles */
-        .dashboard {
-            display: none;
-            min-height: 100vh;
-        }
-
-        .dashboard.active {
-            display: flex;
-        }
-
-        .sidebar {
-            width: 280px;
-            background: rgba(26, 32, 44, 0.95);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 30px 0;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .sidebar-header {
-            padding: 0 30px 30px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .sidebar-header h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-        }
-
-        .sidebar-menu li {
-            margin-bottom: 5px;
-        }
-
-        .sidebar-menu a {
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: var(--primary);
+            border-radius: 16px;
             display: flex;
             align-items: center;
-            padding: 15px 30px;
-            color: #A0AEC0;
-            text-decoration: none;
-            transition: all 0.3s ease-in-out;
-            font-weight: 500;
-        }
-
-        .sidebar-menu a:hover {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3B82F6;
-            border-right: 3px solid #3B82F6;
-        }
-
-        .sidebar-menu a.active {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3B82F6;
-            border-right: 3px solid #3B82F6;
-        }
-
-        .main-content {
-            margin-left: 280px;
-            padding: 30px;
-            min-height: 100vh;
-        }
-
-        .content-header {
-            margin-bottom: 30px;
-        }
-
-        .content-header h1 {
-            font-size: 2.2rem;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
             font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .content-header p {
-            color: #A0AEC0;
-            font-size: 1.1rem;
-        }
-
-        .card {
-            background: rgba(45, 55, 72, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease-in-out;
-        }
-
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .card h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #E2E8F0;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease-in-out;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            font-size: 24px;
             color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-            color: white;
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
+            position: relative;
             overflow: hidden;
         }
 
-        .table th,
-        .table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .logo::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
         }
 
-        .table th {
-            background: rgba(0, 0, 0, 0.3);
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .card-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #a0aec0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); }
+        }
+
+        .card-header .subtitle {
+            color: var(--dark-muted);
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.3s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Form Container */
+        .form-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .form-flipper {
+            display: flex;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-section {
+            flex: 0 0 100%;
+            width: 100%;
+            padding: 32px;
+        }
+
+        .auth-card.show-register .form-flipper {
+            transform: translateX(-100%);
+        }
+
+        /* Form Fields */
+        .field {
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 12px;
             font-weight: 600;
-            color: #E2E8F0;
-        }
-
-        .table tbody tr:hover {
-            background: rgba(59, 130, 246, 0.1);
-        }
-
-        .status {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 0.875rem;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
         }
 
-        .status.pending {
-            background: rgba(251, 191, 36, 0.2);
-            color: #F59E0B;
+        .input-group {
+            position: relative;
         }
 
-        .status.approved {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10B981;
+        .field input {
+            width: 100%;
+            padding: 18px 24px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--dark-text);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(8px);
         }
 
-        .status.rejected {
-            background: rgba(239, 68, 68, 0.2);
-            color: #EF4444;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .logout-btn {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            background: rgba(239, 68, 68, 0.2);
-            color: #EF4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.3);
+        .field input:focus {
+            outline: none;
+            border-color: var(--primary-glow);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1), 0 8px 16px rgba(102, 126, 234, 0.2);
             transform: translateY(-2px);
         }
 
-        .error-message {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #EF4444;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: 500;
+        .field input:valid {
+            border-color: rgba(56, 239, 125, 0.5);
         }
 
-        .success-message {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #10B981;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .field .error {
+            color: #fc466b;
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 8px;
             font-weight: 500;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .field .error:not(:empty) {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hidden name field animation */
+        #registerForm .field[data-field="name"] {
+            max-height: 0;
+            overflow: hidden;
+            margin: 0;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .auth-card.show-register #registerForm .field[data-field="name"] {
+            max-height: 120px;
+            margin-bottom: 28px;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Action Buttons */
+        .actions {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .btn {
+            position: relative;
+            overflow: hidden;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn.primary {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            padding: 18px 32px;
+            font-size: 1rem;
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn.primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn.primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn.primary:hover:not(:disabled)::before {
+            left: 100%;
+        }
+        
+        .btn.primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.primary:active {
+            transform: translateY(-1px);
+        }
+
+        .toggle-link {
+            display: inline-block;
+            margin-top: 32px;
+            color: var(--dark-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .toggle-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .toggle-link:hover {
+            color: var(--dark-text);
+            transform: translateY(-2px);
+        }
+
+        .toggle-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Alerts */
+        .alert {
+            margin-top: 32px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-align: center;
+            border: 1px solid;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .alert:not([hidden]) {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .alert.error {
+            background: rgba(252, 70, 107, 0.1);
+            color: #fc466b;
+            border-color: rgba(252, 70, 107, 0.3);
+        }
+        
+        .alert.success {
+            background: rgba(56, 239, 125, 0.1);
+            color: #38ef7d;
+            border-color: rgba(56, 239, 125, 0.3);
+        }
+
+        /* Loading States */
+        .loading {
+            position: relative;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
         }
 
         /* Responsive Design */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease-in-out;
-            }
-
-            .sidebar.mobile-open {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-
+        @media (max-width: 640px) {
             .auth-card {
-                padding: 30px 20px;
+                padding: 32px 24px;
+                margin: 16px;
             }
-
-            .form-row {
-                flex-direction: column;
+            
+            .card-header h1 {
+                font-size: 2rem;
             }
-
-            .table {
-                font-size: 14px;
-            }
-
-            .table th,
-            .table td {
-                padding: 10px;
+            
+            .form-section {
+                padding: 24px;
             }
         }
 
-        @media (max-width: 480px) {
-            .auth-header h1 {
-                font-size: 2rem;
-            }
+        /* Micro-interactions */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
 
-            .content-header h1 {
-                font-size: 1.8rem;
-            }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
 
-            .card {
-                padding: 20px;
-            }
+        /* Focus indicator for accessibility */
+        .btn:focus-visible,
+        .toggle-link:focus-visible {
+            outline: 2px solid var(--primary-glow);
+            outline-offset: 2px;
         }
     </style>
 </head>
 <body>
-    <!-- Authentication Container -->
-    <div id="auth-container">
-        <div class="auth-card">
-            <div class="auth-header">
-                <h1>Premium Bank</h1>
-                <p>Secure Banking Experience</p>
+    <!-- Floating Background Elements -->
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+
+    <main class="auth-container">
+        <div class="auth-card" id="authCard">
+            <header class="card-header">
+                <div class="logo">B</div>
+                <h1 id="formTitle">Welcome Back</h1>
+                <p class="subtitle" id="formSubtitle">Sign in to access your dashboard</p>
+            </header>
+
+            <div class="form-container">
+                <div class="form-flipper">
+                    <!-- Login Form -->
+                    <section class="form-section">
+                        <form id="loginForm" novalidate>
+                            <div class="field">
+                                <label for="login-email">Email Address</label>
+                                <div class="input-group">
+                                    <input id="login-email" name="email" type="email" required autocomplete="username" placeholder="Enter your email" />
+                                </div>
+                                <span class="error" data-for="login-email"></span>
+                            </div>
+                            <div class="field">
+                                <label for="login-password">Password</label>
+                                <div class="input-group">
+                                    <input id="login-password" name="password" type="password" required autocomplete="current-password" placeholder="Enter your password" />
+                                </div>
+                                <span class="error" data-for="login-password"></span>
+                            </div>
+                        </form>
+                    </section>
+                    <!-- Register Form -->
+                    <section class="form-section">
+                        <form id="registerForm" novalidate>
+                            <div class="field" data-field="name">
+                                <label for="register-name">Full Name</label>
+                                <div class="input-group">
+                                    <input id="register-name" name="name" type="text" required placeholder="Enter your full name" />
+                                </div>
+                                <span class="error" data-for="register-name"></span>
+                            </div>
+                            <div class="field">
+                                <label for="register-email">Email Address</label>
+                                <div class="input-group">
+                                    <input id="register-email" name="email" type="email" required placeholder="Enter your email" />
+                                </div>
+                                <span class="error" data-for="register-email"></span>
+                            </div>
+                            <div class="field">
+                                <label for="register-password">Password</label>
+                                <div class="input-group">
+                                    <input id="register-password" name="password" type="password" required minlength="6" placeholder="Minimum 6 characters" />
+                                </div>
+                                <span class="error" data-for="register-password"></span>
+                            </div>
+                        </form>
+                    </section>
+                </div>
             </div>
 
-            <div class="auth-toggle">
-                <button id="login-toggle" class="active">Login</button>
-                <button id="register-toggle">Register</button>
+            <div class="actions">
+                <button id="submitBtn" class="btn primary" type="submit">Sign In</button>
+                <a id="toggleLink" class="toggle-link">Don't have an account? Sign Up</a>
             </div>
 
-            <!-- Login Form -->
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="login-email">Email Address</label>
-                    <input type="email" id="login-email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" name="password" required>
-                </div>
-                <button type="submit" class="submit-btn">Login</button>
-            </form>
-
-            <!-- Register Form -->
-            <form id="register-form" class="hidden">
-                <div class="form-group">
-                    <label for="register-name">Full Name</label>
-                    <input type="text" id="register-name" name="fullName" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-email">Email Address</label>
-                    <input type="email" id="register-email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-password">Password</label>
-                    <input type="password" id="register-password" name="password" required>
-                </div>
-                <button type="submit" class="submit-btn">Register</button>
-            </form>
+            <div id="formAlert" class="alert" role="status" aria-live="polite" hidden></div>
         </div>
-    </div>
-
-    <!-- Customer Dashboard -->
-    <div id="customer-dashboard" class="dashboard">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Customer Portal</h2>
-            </div>
-            <ul class="sidebar-menu">
-                <li><a href="#" data-section="home" class="active">Dashboard</a></li>
-                <li><a href="#" data-section="deposit">Deposit</a></li>
-                <li><a href="#" data-section="withdraw">Withdraw</a></li>
-                <li><a href="#" data-section="transfer">Transfer</a></li>
-                <li><a href="#" data-section="loans">Apply for Loan</a></li>
-                <li><a href="#" data-section="insurance">Apply for Insurance</a></li>
-                <li><a href="#" data-section="applications">Application Status</a></li>
-            </ul>
-        </aside>
-
-        <main class="main-content">
-            <button class="logout-btn" onclick="logout()">Logout</button>
-
-            <!-- Home Section -->
-            <div id="home-section" class="content-section">
-                <div class="content-header">
-                    <h1>Welcome Back</h1>
-                    <p>Manage your account and transactions</p>
-                </div>
-                <div class="card">
-                    <h3>Account Overview</h3>
-                    <p>Your premium banking experience starts here. Use the sidebar to navigate through different services.</p>
-                </div>
-            </div>
-
-            <!-- Deposit Section -->
-            <div id="deposit-section" class="content-section hidden">
-                <div class="content-header">
-                    <h1>Make a Deposit</h1>
-                    <p>Add funds to your account</p>
-                </div>
-                <div class="card">
-                    <h3>Deposit Funds</h3>
-                    <form id="deposit-form">
-                        <div class="form-group">
-                            <label for="deposit-amount">Amount</label>
-                            <input type="number" id="deposit-amount" name="amount" step="0.01" min="1" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Deposit</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Withdraw Section -->
-            <div id="withdraw-section" class="content-section hidden">
-                <div class="content-header">
-                    <h1>Make a Withdrawal</h1>
-                    <p>Withdraw funds from your account</p>
-                </div>
-                <div class="card">
-                    <h3>Withdraw Funds</h3>
-                    <form id="withdraw-form">
-                        <div class="form-group">
-                            <label for="withdraw-amount">Amount</label>
-                            <input type="number" id="withdraw-amount" name="amount" step="0.01" min="1" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Withdraw</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Transfer Section -->
-            <div id="transfer-section" class="content-section hidden">
-                <div class="content-header">
-                    <h1>Transfer Funds</h1>
-                    <p>Send money to another account</p>
-                </div>
-                <div class="card">
-                    <h3>Transfer Money</h3>
-                    <form id="transfer-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="transfer-recipient">Recipient Account Number</label>
-                                <input type="text" id="transfer-recipient" name="recipient" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="transfer-amount">Amount</label>
-                                <input type="number" id="transfer-amount" name="amount" step="0.01" min="1" required>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Transfer</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Loans Section -->
-            <div id="loans-section" class="content-section hidden">
-                <div class="content-header">
-                    <h1>Apply for Loan</h1>
-                    <p>Get the financial support you need</p>
-                </div>
-                <div class="card">
-                    <h3>Loan Application</h3>
-                    <form id="loan-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="loan-type">Loan Type</label>
-                                <select id="loan-type" name="type" required style="width: 100%; padding: 15px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: #E2E8F0;">
-                                    <option value="">Select Loan Type</option>
-                                    <option value="personal">Personal Loan</option>
-                                    <option value="home">Home Loan</option>
-                                    <option value="car">Car Loan</option>
-                                    <option value="business">Business Loan</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="loan-amount">Amount</label>
-                                <input type="number" id="loan-amount" name="amount" step="0.01" min="1000" required>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Apply for Loan</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Insurance Section -->
-            <div id="insurance-section" class="content-section hidden">
-                <div class="content-header">
-                    <h1>Apply for Insurance</h1>
-                    <p>Protect what matters most</p>
-                </div>
-                <div class="card">
-                    <h3>Insurance Application</h3>
-                    <form id="insurance-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="insurance-type">Insurance Type</label>
-                                <select id="insurance-type" name="type" required style="width: 100%; padding: 15px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: #E2E8F0;">
-                                    <option value="">Select Insurance Type</option>
-                                    <option value="life">Life Insurance</option>
-                                    <option value="health">Health Insurance</option>
-                                    <option value="car">Car Insurance</option>
-                                    <option value="home">Home Insurance</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="insurance-coverage">Coverage Amount</label>
-                                <input type="number" id="insurance-coverage" name="coverage" step="0.01" min="10000" required>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Apply for Insurance</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Applications Section -->
-            <div id="applications-section" class="content-section hidden">
-                <div class="content-header">
-                    <h1>Application Status</h1>
-                    <p>Track your loan and insurance applications</p>
-                </div>
-                <div class="card">
-                    <h3>Your Applications</h3>
-                    <table class="table" id="applications-table">
-                        <thead>
-                            <tr>
-                                <th>Application ID</th>
-                                <th>Type</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Dynamic content will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Admin Dashboard -->
-    <div id="admin-dashboard" class="dashboard">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Admin Portal</h2>
-            </div>
-            <ul class="sidebar-menu">
-                <li><a href="#" data-section="admin-home" class="active">Dashboard</a></li>
-                <li><a href="#" data-section="admin-deposits">Deposits</a></li>
-                <li><a href="#" data-section="admin-withdrawals">Withdrawals</a></li>
-                <li><a href="#" data-section="admin-loans">Loan Applications</a></li>
-                <li><a href="#" data-section="admin-insurance">Insurance Applications</a></li>
-            </ul>
-        </aside>
-
-        <main class="main-content">
-            <button class="logout-btn" onclick="logout()">Logout</button>
-
-            <!-- Admin Home Section -->
-            <div id="admin-home-section" class="content-section">
-                <div class="content-header">
-                    <h1>Admin Dashboard</h1>
-                    <p>Manage transactions and applications</p>
-                </div>
-                <div class="card">
-                    <h3>System Overview</h3>
-                    <p>Welcome to the admin portal. Use the sidebar to manage different aspects of the banking system.</p>
-                </div>
-            </div>
-
-            <!-- Admin Deposits Section -->
-            <div id="admin-deposits-section" class="content-section hidden">
-                <div class="content-header">
-                    <h1>Deposit Transactions</h1>
-                    <p>Review all customer deposits</p>
-                </div>
-                <div class="card">
-                    <h3>Recent Deposits</h3>
-                    <table class="table" id="deposits-table">
-                        <thead>
-                            <tr>
-                                <th>Transaction ID</th>
-                                <th>Customer</th>
-                                <th>Amount</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Dynamic content will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Admin Withdrawals Section -->
-            <div id="admin-withdrawals-section" class="content-section hidden">
-                <div class="content-header">
-                    <h1>Withdrawal Transactions</h1>
-                    <p>Review all customer withdrawals</p>
-                </div>
-                <div class="card">
-                    <h3>Recent Withdrawals</h3>
-                    <table class="table" id="withdrawals-table">
-                        <thead>
-                            <tr>
-                                <th>Transaction ID</th>
-                                <th>Customer</th>
-                                <th>Amount</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Dynamic content will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Admin Loans Section -->
-            <div id="admin-loans-section" class="content-section hidden">
-                <div class="content-header">
-                    <h1>Loan Applications</h1>
-                    <p>Review and manage loan applications</p>
-                </div>
-                <div class="card">
-                    <h3>Pending Loan Applications</h3>
-                    <table class="table" id="admin-loans-table">
-                        <thead>
-                            <tr>
-                                <th>Application ID</th>
-                                <th>Customer</th>
-                                <th>Type</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Dynamic content will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Admin Insurance Section -->
-            <div id="admin-insurance-section" class="content-section hidden">
-                <div class="content-header">
-                    <h1>Insurance Applications</h1>
-                    <p>Review and manage insurance applications</p>
-                </div>
-                <div class="card">
-                    <h3>Pending Insurance Applications</h3>
-                    <table class="table" id="admin-insurance-table">
-                        <thead>
-                            <tr>
-                                <th>Application ID</th>
-                                <th>Customer</th>
-                                <th>Type</th>
-                                <th>Coverage</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Dynamic content will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
-    </div>
+    </main>
 
     <script>
-        // Global state management
-        let currentUser = null;
-        let userRole = null;
-        let authToken = null;
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_BASE = "http://localhost:3000";
 
-        // DOM Elements
-        const authContainer = document.getElementById('auth-container');
-        const customerDashboard = document.getElementById('customer-dashboard');
-        const adminDashboard = document.getElementById('admin-dashboard');
-        const loginToggle = document.getElementById('login-toggle');
-        const registerToggle = document.getElementById('register-toggle');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
+            // --- DOM Elements ---
+            const authCard = document.getElementById('authCard');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const toggleLink = document.getElementById('toggleLink');
+            const alertBox = document.getElementById('formAlert');
+            const formTitle = document.getElementById('formTitle');
+            const formSubtitle = document.getElementById('formSubtitle');
 
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            setupEventListeners();
-            showAuthForm();
-        });
+            let isLoginView = true;
 
-        // Setup all event listeners
-        function setupEventListeners() {
-            // Auth toggle buttons
-            loginToggle.addEventListener('click', () => toggleAuthForm('login'));
-            registerToggle.addEventListener('click', () => toggleAuthForm('register'));
+            // --- Enhanced UI Toggle Function ---
+            const toggleView = () => {
+                isLoginView = !isLoginView;
+                authCard.classList.toggle('show-register', !isLoginView);
+                clearAllErrors();
+                
+                // Add subtle vibration effect
+                authCard.style.transform = 'scale(0.98)';
+                setTimeout(() => authCard.style.transform = '', 150);
+                
+                if (isLoginView) {
+                    formTitle.textContent = 'Welcome Back';
+                    formSubtitle.textContent = 'Sign in to access your dashboard';
+                    submitBtn.textContent = 'Sign In';
+                    toggleLink.textContent = 'Don\'t have an account? Sign Up';
+                    document.title = 'BankApp — Login';
+                } else {
+                    formTitle.textContent = 'Create Account';
+                    formSubtitle.textContent = 'Join thousands of satisfied customers';
+                    submitBtn.textContent = 'Create Account';
+                    toggleLink.textContent = 'Already have an account? Sign In';
+                    document.title = 'BankApp — Register';
+                }
+            };
+            
+            toggleLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleView();
+            });
 
-            // Form submissions
-            loginForm.addEventListener('submit', handleLogin);
-            registerForm.addEventListener('submit', handleRegister);
+            // --- Enhanced Form Submission Logic ---
+            const handleFormSubmit = (e) => {
+                e.preventDefault();
+                if (isLoginView) {
+                    handleLogin();
+                } else {
+                    handleRegister();
+                }
+            };
 
-            // Customer dashboard forms
-            document.getElementById('deposit-form').addEventListener('submit', handleDeposit);
-            document.getElementById('withdraw-form').addEventListener('submit', handleWithdraw);
-            document.getElementById('transfer-form').addEventListener('submit', handleTransfer);
-            document.getElementById('loan-form').addEventListener('submit', handleLoanApplication);
-            document.getElementById('insurance-form').addEventListener('submit', handleInsuranceApplication);
+            submitBtn.addEventListener('click', handleFormSubmit);
+            loginForm.addEventListener('submit', handleFormSubmit);
+            registerForm.addEventListener('submit', handleFormSubmit);
 
-            // Sidebar navigation
-            setupSidebarNavigation();
-        }
+            // --- Enhanced Login Handler ---
+            const handleLogin = async () => {
+                clearAllErrors();
+                const email = loginForm.email.value.trim();
+                const password = loginForm.password.value;
 
-        // Toggle between login and register forms
-        function toggleAuthForm(type) {
-            if (type === 'login') {
-                loginToggle.classList.add('active');
-                registerToggle.classList.remove('active');
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-            } else {
-                registerToggle.classList.add('active');
-                loginToggle.classList.remove('active');
-                registerForm.classList.remove('hidden');
-                loginForm.classList.add('hidden');
-            }
-        }
+                if (!validateLoginForm(email, password)) return;
 
-        // Setup sidebar navigation for both dashboards
-        function setupSidebarNavigation() {
-            const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
-            sidebarLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const section = this.getAttribute('data-section');
+                // --- Admin Credentials Check ---
+                if (email === 'admin@gmail.com' && password === '123456') {
+                    showAlert('Admin access granted. Redirecting to control panel...', 'success');
+                    setTimeout(() => window.location.href = 'admin_dashboard.html', 1500);
+                    return;
+                }
+
+                setButtonLoading(true, 'Authenticating...');
+                try {
+                    const res = await fetch(`${API_BASE}/api/auth/login`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || 'Authentication failed');
                     
-                    // Remove active class from all links
-                    sidebarLinks.forEach(l => l.classList.remove('active'));
-                    // Add active class to clicked link
-                    this.classList.add('active');
+                    showAlert('Authentication successful! Redirecting to dashboard...', 'success');
+                    setTimeout(() => window.location.href = 'customer_dashboard.html', 1500);
+                } catch (err) {
+                    showAlert(err.message, 'error');
+                    setButtonLoading(false);
+                    // Add shake effect on error
+                    authCard.style.animation = 'shake 0.5s ease-in-out';
+                    setTimeout(() => authCard.style.animation = '', 500);
+                }
+            };
+
+            // --- Enhanced Register Handler ---
+            const handleRegister = async () => {
+                clearAllErrors();
+                const name = registerForm.name.value.trim();
+                const email = registerForm.email.value.trim();
+                const password = registerForm.password.value;
+
+                if (!validateRegisterForm(name, email, password)) return;
+
+                setButtonLoading(true, 'Creating Account...');
+                try {
+                    const res = await fetch(`${API_BASE}/api/auth/register`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, password })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || 'Registration failed');
                     
-                    // Show the corresponding section
-                    showSection(section);
+                    showAlert('Account created successfully! Welcome aboard!', 'success');
+                    setTimeout(() => window.location.href = 'customer_dashboard.html', 1500);
+                } catch (err) {
+                    showAlert(err.message, 'error');
+                    setButtonLoading(false);
+                    // Add shake effect on error
+                    authCard.style.animation = 'shake 0.5s ease-in-out';
+                    setTimeout(() => authCard.style.animation = '', 500);
+                }
+            };
+
+            // --- Enhanced Validation ---
+            const validateLoginForm = (email, password) => {
+                let isValid = true;
+                if (!email) { 
+                    showError('login-email', 'Email address is required'); 
+                    isValid = false; 
+                }
+                if (!password) { 
+                    showError('login-password', 'Password is required'); 
+                    isValid = false; 
+                }
+                return isValid;
+            };
+
+            const validateRegisterForm = (name, email, password) => {
+                let isValid = true;
+                if (!name) { 
+                    showError('register-name', 'Full name is required'); 
+                    isValid = false; 
+                }
+                if (!email) { 
+                    showError('register-email', 'Email address is required'); 
+                    isValid = false; 
+                }
+                if (!password || password.length < 6) { 
+                    showError('register-password', 'Password must be at least 6 characters long'); 
+                    isValid = false; 
+                }
+                return isValid;
+            };
+
+            // --- Enhanced Helper Functions ---
+            const setButtonLoading = (isLoading, text) => {
+                submitBtn.disabled = isLoading;
+                if (isLoading) {
+                    submitBtn.textContent = text;
+                    submitBtn.classList.add('loading');
+                } else {
+                    submitBtn.textContent = isLoginView ? 'Sign In' : 'Create Account';
+                    submitBtn.classList.remove('loading');
+                }
+            };
+            
+            const showAlert = (message, type = 'error') => {
+                alertBox.textContent = message;
+                alertBox.className = `alert ${type}`;
+                alertBox.hidden = false;
+                
+                // Auto-hide after 5 seconds for success messages
+                if (type === 'success') {
+                    setTimeout(() => {
+                        alertBox.hidden = true;
+                    }, 5000);
+                }
+            };
+
+            const showError = (fieldId, message) => {
+                const errorSpan = document.querySelector(`.error[data-for="${fieldId}"]`);
+                if (errorSpan) {
+                    errorSpan.textContent = message;
+                    // Add field shake animation
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.style.animation = 'shake 0.3s ease-in-out';
+                        setTimeout(() => field.style.animation = '', 300);
+                    }
+                }
+            };
+
+            const clearAllErrors = () => {
+                document.querySelectorAll('.error').forEach(e => (e.textContent = ''));
+                alertBox.hidden = true;
+            };
+
+            // --- Enhanced Input Interactions ---
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('focus', (e) => {
+                    e.target.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', (e) => {
+                    e.target.parentElement.style.transform = '';
                 });
             });
-        }
 
-        // Show specific section in dashboard
-        function showSection(sectionName) {
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => section.classList.add('hidden'));
-            
-            const targetSection = document.getElementById(sectionName + '-section');
-            if (targetSection) {
-                targetSection.classList.remove('hidden');
-                
-                // Load data for specific sections
-                if (sectionName === 'applications') {
-                    loadApplications();
-                } else if (sectionName === 'admin-deposits') {
-                    loadAdminDeposits();
-                } else if (sectionName === 'admin-withdrawals') {
-                    loadAdminWithdrawals();
-                } else if (sectionName === 'admin-loans') {
-                    loadAdminLoans();
-                } else if (sectionName === 'admin-insurance') {
-                    loadAdminInsurance();
+            // Add shake animation keyframes
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-5px); }
+                    75% { transform: translateX(5px); }
                 }
-            }
-        }
-
-        // Handle login form submission
-        async function handleLogin(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const loginData = {
-                email: formData.get('email'),
-                password: formData.get('password')
-            };
-
-            try {
-                showLoading('Logging in...');
-                const response = await apiCall('/api/auth/login', 'POST', loginData);
-                
-                if (response.status === 'success') {
-                    authToken = response.token;
-                    userRole = response.role;
-                    currentUser = response.user || { email: loginData.email };
-                    
-                    hideLoading();
-                    showSuccessMessage('Login successful!');
-                    
-                    setTimeout(() => {
-                        showDashboard(userRole);
-                    }, 1000);
-                } else {
-                    hideLoading();
-                    showErrorMessage(response.message || 'Login failed');
-                }
-            } catch (error) {
-                hideLoading();
-                showErrorMessage('Network error. Please try again.');
-                console.error('Login error:', error);
-            }
-        }
-
-        // Handle register form submission
-        async function handleRegister(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const registerData = {
-                fullName: formData.get('fullName'),
-                email: formData.get('email'),
-                password: formData.get('password')
-            };
-
-            try {
-                showLoading('Creating account...');
-                const response = await apiCall('/api/auth/register', 'POST', registerData);
-                
-                if (response.status === 'success') {
-                    hideLoading();
-                    showSuccessMessage('Registration successful! Please login.');
-                    setTimeout(() => {
-                        toggleAuthForm('login');
-                    }, 1500);
-                } else {
-                    hideLoading();
-                    showErrorMessage(response.message || 'Registration failed');
-                }
-            } catch (error) {
-                hideLoading();
-                showErrorMessage('Network error. Please try again.');
-                console.error('Registration error:', error);
-            }
-        }
-
-        // Handle deposit form submission
-        async function handleDeposit(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const amount = parseFloat(formData.get('amount'));
-
-            if (amount <= 0) {
-                showErrorMessage('Please enter a valid amount');
-                return;
-            }
-
-            try {
-                showLoading('Processing deposit...');
-                const response = await apiCall('/api/customer/deposit', 'POST', { amount });
-                
-                if (response.status === 'success') {
-                    hideLoading();
-                    showSuccessMessage(`Successfully deposited ${amount}`);
-                    e.target.reset();
-                } else {
-                    hideLoading();
-                    showErrorMessage(response.message || 'Deposit failed');
-                }
-            } catch (error) {
-                hideLoading();
-                showErrorMessage('Network error. Please try again.');
-                console.error('Deposit error:', error);
-            }
-        }
-
-        // Handle withdraw form submission
-        async function handleWithdraw(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const amount = parseFloat(formData.get('amount'));
-
-            if (amount <= 0) {
-                showErrorMessage('Please enter a valid amount');
-                return;
-            }
-
-            try {
-                showLoading('Processing withdrawal...');
-                const response = await apiCall('/api/customer/withdraw', 'POST', { amount });
-                
-                if (response.status === 'success') {
-                    hideLoading();
-                    showSuccessMessage(`Successfully withdrew ${amount}`);
-                    e.target.reset();
-                } else {
-                    hideLoading();
-                    showErrorMessage(response.message || 'Withdrawal failed');
-                }
-            } catch (error) {
-                hideLoading();
-                showErrorMessage('Network error. Please try again.');
-                console.error('Withdrawal error:', error);
-            }
-        }
-
-        // Handle transfer form submission
-        async function handleTransfer(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const transferData = {
-                recipient: formData.get('recipient'),
-                amount: parseFloat(formData.get('amount'))
-            };
-
-            if (transferData.amount <= 0) {
-                showErrorMessage('Please enter a valid amount');
-                return;
-            }
-
-            if (!transferData.recipient.trim()) {
-                showErrorMessage('Please enter recipient account number');
-                return;
-            }
-
-            try {
-                showLoading('Processing transfer...');
-                const response = await apiCall('/api/customer/transfer', 'POST', transferData);
-                
-                if (response.status === 'success') {
-                    hideLoading();
-                    showSuccessMessage(`Successfully transferred ${transferData.amount} to ${transferData.recipient}`);
-                    e.target.reset();
-                } else {
-                    hideLoading();
-                    showErrorMessage(response.message || 'Transfer failed');
-                }
-            } catch (error) {
-                hideLoading();
-                showErrorMessage('Network error. Please try again.');
-                console.error('Transfer error:', error);
-            }
-        }
-
-        // Handle loan application form submission
-        async function handleLoanApplication(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const loanData = {
-                type: formData.get('type'),
-                amount: parseFloat(formData.get('amount'))
-            };
-
-            if (!loanData.type) {
-                showErrorMessage('Please select a loan type');
-                return;
-            }
-
-            if (loanData.amount < 1000) {
-                showErrorMessage('Minimum loan amount is $1,000');
-                return;
-            }
-
-            try {
-                showLoading('Submitting loan application...');
-                const response = await apiCall('/api/customer/loan/apply', 'POST', loanData);
-                
-                if (response.status === 'success') {
-                    hideLoading();
-                    showSuccessMessage('Loan application submitted successfully!');
-                    e.target.reset();
-                } else {
-                    hideLoading();
-                    showErrorMessage(response.message || 'Loan application failed');
-                }
-            } catch (error) {
-                hideLoading();
-                showErrorMessage('Network error. Please try again.');
-                console.error('Loan application error:', error);
-            }
-        }
-
-        // Handle insurance application form submission
-        async function handleInsuranceApplication(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const insuranceData = {
-                type: formData.get('type'),
-                coverage: parseFloat(formData.get('coverage'))
-            };
-
-            if (!insuranceData.type) {
-                showErrorMessage('Please select an insurance type');
-                return;
-            }
-
-            if (insuranceData.coverage < 10000) {
-                showErrorMessage('Minimum coverage amount is $10,000');
-                return;
-            }
-
-            try {
-                showLoading('Submitting insurance application...');
-                const response = await apiCall('/api/customer/insurance/apply', 'POST', insuranceData);
-                
-                if (response.status === 'success') {
-                    hideLoading();
-                    showSuccessMessage('Insurance application submitted successfully!');
-                    e.target.reset();
-                } else {
-                    hideLoading();
-                    showErrorMessage(response.message || 'Insurance application failed');
-                }
-            } catch (error) {
-                hideLoading();
-                showErrorMessage('Network error. Please try again.');
-                console.error('Insurance application error:', error);
-            }
-        }
-
-        // Load customer applications
-        async function loadApplications() {
-            try {
-                const response = await apiCall('/api/customer/applications', 'GET');
-                const tbody = document.querySelector('#applications-table tbody');
-                
-                if (response.status === 'success' && response.data) {
-                    tbody.innerHTML = response.data.map(app => `
-                        <tr>
-                            <td>${app.id}</td>
-                            <td>${app.type}</td>
-                            <td>${parseFloat(app.amount || app.coverage || 0).toLocaleString()}</td>
-                            <td><span class="status ${app.status.toLowerCase()}">${app.status}</span></td>
-                            <td>${new Date(app.date).toLocaleDateString()}</td>
-                        </tr>
-                    `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #A0AEC0;">No applications found</td></tr>';
-                }
-            } catch (error) {
-                console.error('Error loading applications:', error);
-                const tbody = document.querySelector('#applications-table tbody');
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #EF4444;">Error loading applications</td></tr>';
-            }
-        }
-
-        // Load admin deposits
-        async function loadAdminDeposits() {
-            try {
-                const response = await apiCall('/api/admin/deposits', 'GET');
-                const tbody = document.querySelector('#deposits-table tbody');
-                
-                if (response.status === 'success' && response.data) {
-                    tbody.innerHTML = response.data.map(deposit => `
-                        <tr>
-                            <td>${deposit.transactionId}</td>
-                            <td>${deposit.customerName}</td>
-                            <td>${parseFloat(deposit.amount).toLocaleString()}</td>
-                            <td>${new Date(deposit.date).toLocaleDateString()}</td>
-                            <td><span class="status approved">Completed</span></td>
-                        </tr>
-                    `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #A0AEC0;">No deposits found</td></tr>';
-                }
-            } catch (error) {
-                console.error('Error loading deposits:', error);
-                const tbody = document.querySelector('#deposits-table tbody');
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #EF4444;">Error loading deposits</td></tr>';
-            }
-        }
-
-        // Load admin withdrawals
-        async function loadAdminWithdrawals() {
-            try {
-                const response = await apiCall('/api/admin/withdrawals', 'GET');
-                const tbody = document.querySelector('#withdrawals-table tbody');
-                
-                if (response.status === 'success' && response.data) {
-                    tbody.innerHTML = response.data.map(withdrawal => `
-                        <tr>
-                            <td>${withdrawal.transactionId}</td>
-                            <td>${withdrawal.customerName}</td>
-                            <td>${parseFloat(withdrawal.amount).toLocaleString()}</td>
-                            <td>${new Date(withdrawal.date).toLocaleDateString()}</td>
-                            <td><span class="status approved">Completed</span></td>
-                        </tr>
-                    `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #A0AEC0;">No withdrawals found</td></tr>';
-                }
-            } catch (error) {
-                console.error('Error loading withdrawals:', error);
-                const tbody = document.querySelector('#withdrawals-table tbody');
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #EF4444;">Error loading withdrawals</td></tr>';
-            }
-        }
-
-        // Load admin loans
-        async function loadAdminLoans() {
-            try {
-                const response = await apiCall('/api/admin/loan/applications', 'GET');
-                const tbody = document.querySelector('#admin-loans-table tbody');
-                
-                if (response.status === 'success' && response.data) {
-                    tbody.innerHTML = response.data.map(loan => `
-                        <tr>
-                            <td>${loan.applicationId}</td>
-                            <td>${loan.customerName}</td>
-                            <td>${loan.type}</td>
-                            <td>${parseFloat(loan.amount).toLocaleString()}</td>
-                            <td><span class="status ${loan.status.toLowerCase()}">${loan.status}</span></td>
-                            <td>
-                                ${loan.status === 'Pending' ? `
-                                    <button class="btn btn-success" onclick="approveApplication('loan', '${loan.applicationId}')">Approve</button>
-                                    <button class="btn btn-danger" onclick="rejectApplication('loan', '${loan.applicationId}')">Reject</button>
-                                ` : ''}
-                            </td>
-                        </tr>
-                    `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #A0AEC0;">No loan applications found</td></tr>';
-                }
-            } catch (error) {
-                console.error('Error loading loan applications:', error);
-                const tbody = document.querySelector('#admin-loans-table tbody');
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #EF4444;">Error loading loan applications</td></tr>';
-            }
-        }
-
-        // Load admin insurance
-        async function loadAdminInsurance() {
-            try {
-                const response = await apiCall('/api/admin/insurance/applications', 'GET');
-                const tbody = document.querySelector('#admin-insurance-table tbody');
-                
-                if (response.status === 'success' && response.data) {
-                    tbody.innerHTML = response.data.map(insurance => `
-                        <tr>
-                            <td>${insurance.applicationId}</td>
-                            <td>${insurance.customerName}</td>
-                            <td>${insurance.type}</td>
-                            <td>${parseFloat(insurance.coverage).toLocaleString()}</td>
-                            <td><span class="status ${insurance.status.toLowerCase()}">${insurance.status}</span></td>
-                            <td>
-                                ${insurance.status === 'Pending' ? `
-                                    <button class="btn btn-success" onclick="approveApplication('insurance', '${insurance.applicationId}')">Approve</button>
-                                    <button class="btn btn-danger" onclick="rejectApplication('insurance', '${insurance.applicationId}')">Reject</button>
-                                ` : ''}
-                            </td>
-                        </tr>
-                    `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #A0AEC0;">No insurance applications found</td></tr>';
-                }
-            } catch (error) {
-                console.error('Error loading insurance applications:', error);
-                const tbody = document.querySelector('#admin-insurance-table tbody');
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #EF4444;">Error loading insurance applications</td></tr>';
-            }
-        }
-
-        // Approve application (admin function)
-        async function approveApplication(type, applicationId) {
-            try {
-                showLoading('Approving application...');
-                const response = await apiCall(`/api/admin/${type}/approve/${applicationId}`, 'POST');
-                
-                if (response.status === 'success') {
-                    hideLoading();
-                    showSuccessMessage('Application approved successfully!');
-                    
-                    // Reload the appropriate section
-                    if (type === 'loan') {
-                        loadAdminLoans();
-                    } else {
-                        loadAdminInsurance();
-                    }
-                } else {
-                    hideLoading();
-                    showErrorMessage(response.message || 'Failed to approve application');
-                }
-            } catch (error) {
-                hideLoading();
-                showErrorMessage('Network error. Please try again.');
-                console.error('Approval error:', error);
-            }
-        }
-
-        // Reject application (admin function)
-        async function rejectApplication(type, applicationId) {
-            try {
-                showLoading('Rejecting application...');
-                const response = await apiCall(`/api/admin/${type}/reject/${applicationId}`, 'POST');
-                
-                if (response.status === 'success') {
-                    hideLoading();
-                    showSuccessMessage('Application rejected successfully!');
-                    
-                    // Reload the appropriate section
-                    if (type === 'loan') {
-                        loadAdminLoans();
-                    } else {
-                        loadAdminInsurance();
-                    }
-                } else {
-                    hideLoading();
-                    showErrorMessage(response.message || 'Failed to reject application');
-                }
-            } catch (error) {
-                hideLoading();
-                showErrorMessage('Network error. Please try again.');
-                console.error('Rejection error:', error);
-            }
-        }
-
-        // API call utility function
-        async function apiCall(endpoint, method = 'GET', data = null) {
-            // Mock API responses for demonstration
-            // In production, replace this with actual fetch calls to your backend
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    // Mock responses based on endpoint
-                    if (endpoint === '/api/auth/login') {
-                        if (data.email === 'admin@bank.com' && data.password === 'admin123') {
-                            resolve({ status: 'success', token: 'mock-admin-token', role: 'admin' });
-                        } else if (data.email === 'customer@bank.com' && data.password === 'customer123') {
-                            resolve({ status: 'success', token: 'mock-customer-token', role: 'customer' });
-                        } else {
-                            resolve({ status: 'error', message: 'Invalid credentials' });
-                        }
-                    } else if (endpoint === '/api/auth/register') {
-                        resolve({ status: 'success', message: 'User registered successfully' });
-                    } else if (endpoint.includes('/api/customer/')) {
-                        resolve({ status: 'success', message: 'Operation completed successfully' });
-                    } else if (endpoint === '/api/customer/applications') {
-                        resolve({
-                            status: 'success',
-                            data: [
-                                { id: 'LN001', type: 'Personal Loan', amount: 50000, status: 'Pending', date: new Date() },
-                                { id: 'IN001', type: 'Health Insurance', coverage: 100000, status: 'Approved', date: new Date(Date.now() - 86400000) }
-                            ]
-                        });
-                    } else if (endpoint.includes('/api/admin/')) {
-                        if (endpoint.includes('/deposits')) {
-                            resolve({
-                                status: 'success',
-                                data: [
-                                    { transactionId: 'DEP001', customerName: 'John Doe', amount: 1000, date: new Date() },
-                                    { transactionId: 'DEP002', customerName: 'Jane Smith', amount: 2500, date: new Date(Date.now() - 86400000) }
-                                ]
-                            });
-                        } else if (endpoint.includes('/withdrawals')) {
-                            resolve({
-                                status: 'success',
-                                data: [
-                                    { transactionId: 'WTH001', customerName: 'John Doe', amount: 500, date: new Date() },
-                                    { transactionId: 'WTH002', customerName: 'Jane Smith', amount: 750, date: new Date(Date.now() - 86400000) }
-                                ]
-                            });
-                        } else if (endpoint.includes('/loan/applications')) {
-                            resolve({
-                                status: 'success',
-                                data: [
-                                    { applicationId: 'LN001', customerName: 'John Doe', type: 'Personal', amount: 50000, status: 'Pending' },
-                                    { applicationId: 'LN002', customerName: 'Jane Smith', type: 'Home', amount: 200000, status: 'Approved' }
-                                ]
-                            });
-                        } else if (endpoint.includes('/insurance/applications')) {
-                            resolve({
-                                status: 'success',
-                                data: [
-                                    { applicationId: 'IN001', customerName: 'John Doe', type: 'Health', coverage: 100000, status: 'Pending' },
-                                    { applicationId: 'IN002', customerName: 'Jane Smith', type: 'Life', coverage: 500000, status: 'Approved' }
-                                ]
-                            });
-                        } else if (endpoint.includes('/approve/') || endpoint.includes('/reject/')) {
-                            resolve({ status: 'success', message: 'Application processed successfully' });
-                        }
-                    }
-                }, 1000);
-            });
-
-            // Uncomment and modify for production use:
-            /*
-            const options = {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(authToken && { 'Authorization': `Bearer ${authToken}` })
-                }
-            };
-
-            if (data && method !== 'GET') {
-                options.body = JSON.stringify(data);
-            }
-
-            const response = await fetch(endpoint, options);
-            return await response.json();
-            */
-        }
-
-        // Show authentication form
-        function showAuthForm() {
-            authContainer.style.display = 'flex';
-            customerDashboard.classList.remove('active');
-            adminDashboard.classList.remove('active');
-        }
-
-        // Show appropriate dashboard based on role
-        function showDashboard(role) {
-            authContainer.style.display = 'none';
-            
-            if (role === 'admin') {
-                adminDashboard.classList.add('active');
-                customerDashboard.classList.remove('active');
-            } else {
-                customerDashboard.classList.add('active');
-                adminDashboard.classList.remove('active');
-            }
-        }
-
-        // Logout function
-        function logout() {
-            currentUser = null;
-            userRole = null;
-            authToken = null;
-            
-            // Reset forms
-            loginForm.reset();
-            registerForm.reset();
-            
-            // Show auth form
-            showAuthForm();
-            
-            // Reset to login tab
-            toggleAuthForm('login');
-        }
-
-        // Utility functions for UI feedback
-        function showLoading(message) {
-            // You can implement a loading spinner or overlay here
-            console.log('Loading:', message);
-        }
-
-        function hideLoading() {
-            // Hide loading spinner or overlay
-            console.log('Loading hidden');
-        }
-
-        function showErrorMessage(message) {
-            // Remove existing messages
-            removeMessages();
-            
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.textContent = message;
-            
-            // Insert at the top of the active form or content area
-            const activeContainer = getActiveContainer();
-            activeContainer.insertBefore(errorDiv, activeContainer.firstChild);
-            
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                if (errorDiv.parentNode) {
-                    errorDiv.parentNode.removeChild(errorDiv);
-                }
-            }, 5000);
-        }
-
-        function showSuccessMessage(message) {
-            // Remove existing messages
-            removeMessages();
-            
-            const successDiv = document.createElement('div');
-            successDiv.className = 'success-message';
-            successDiv.textContent = message;
-            
-            // Insert at the top of the active form or content area
-            const activeContainer = getActiveContainer();
-            activeContainer.insertBefore(successDiv, activeContainer.firstChild);
-            
-            // Auto-remove after 3 seconds
-            setTimeout(() => {
-                if (successDiv.parentNode) {
-                    successDiv.parentNode.removeChild(successDiv);
-                }
-            }, 3000);
-        }
-
-        function removeMessages() {
-            const messages = document.querySelectorAll('.error-message, .success-message');
-            messages.forEach(msg => {
-                if (msg.parentNode) {
-                    msg.parentNode.removeChild(msg);
-                }
-            });
-        }
-
-        function getActiveContainer() {
-            if (authContainer.style.display !== 'none') {
-                return document.querySelector('.auth-card');
-            } else if (customerDashboard.classList.contains('active')) {
-                return document.querySelector('#customer-dashboard .main-content');
-            } else {
-                return document.querySelector('#admin-dashboard .main-content');
-            }
-        }
+            `;
+            document.head.appendChild(style);
+        });
     </script>
 </body>
 </html>

@@ -70,7 +70,7 @@ CREATE TABLE insurance (
     duration_years INT NOT NULL,
     age INT NOT NULL,
     smoker BOOLEAN NOT NULL,
-    status ENUM('pending', 'active', 'expired', 'cancelled') DEFAULT 'pending',
+    status ENUM('pending', 'approved', 'rejected', 'active', 'expired', 'cancelled') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );

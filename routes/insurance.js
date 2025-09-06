@@ -55,9 +55,8 @@ router.post("/apply", isLoggedIn, async (req, res) => {
         return res.status(400).json({ message: "Invalid 'age' value" });
     }
     if (typeof smoker !== 'boolean') {
-        return res.status(400).json({ message: "Invalid 'smoker' value" });
+        return res.status(400).json({ message: "Invalid 'smoker' value. Must be a boolean." });
     }
-
 
     try {
         const sql = "INSERT INTO insurance (user_id, insurance_type, premium, coverage_amount, duration_years, age, smoker, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')";
@@ -94,7 +93,7 @@ router.get("/admin/all", isAdmin, async (req, res) => {
             SELECT insurance.insurance_id, users.name, insurance.insurance_type, insurance.premium, insurance.coverage_amount, insurance.status
             FROM insurance
             JOIN users ON insurance.user_id = users.user_id
-            ORDER BY insurance.insurance_id DESC
+            ORDER BY insurance.created_at DESC
         `;
         const [results] = await pool.query(sql);
         
@@ -109,8 +108,8 @@ router.get("/admin/all", isAdmin, async (req, res) => {
 router.post("/admin/update", isAdmin, async (req, res) => {
     const { insuranceId, action } = req.body;
 
-    if (!insuranceId || !["approved", "rejected"].includes(action)) {
-        return res.status(400).json({ message: "Invalid request" });
+    if (!insuranceId || !["activate", "reject"].includes(action)) {
+        return res.status(400).json({ message: "Invalid request: 'action' must be 'activate' or 'reject'" });
     }
 
     const connection = await pool.getConnection();
@@ -118,7 +117,6 @@ router.post("/admin/update", isAdmin, async (req, res) => {
     try {
         await connection.beginTransaction();
 
-        // 1. Get insurance details and lock the row
         const [insuranceDetails] = await connection.query("SELECT * FROM insurance WHERE insurance_id = ? FOR UPDATE", [insuranceId]);
         if (insuranceDetails.length === 0) {
             await connection.rollback();
@@ -126,17 +124,17 @@ router.post("/admin/update", isAdmin, async (req, res) => {
         }
         const insurance = insuranceDetails[0];
 
-        // Prevent double processing
         if (insurance.status !== 'pending') {
             await connection.rollback();
             return res.status(409).json({ message: `Insurance is already ${insurance.status}` });
         }
 
-        if (action === "approved") {
+        let newStatus = '';
+        if (action === "activate") {
+            newStatus = 'active';
             const premium = parseFloat(insurance.premium);
             const userId = insurance.user_id;
 
-            // 2. Get user's account details
             const [accountDetails] = await connection.query("SELECT account_id, account_number, balance FROM accounts WHERE user_id = ? FOR UPDATE", [userId]);
             if (accountDetails.length === 0) {
                 await connection.rollback();
@@ -144,31 +142,24 @@ router.post("/admin/update", isAdmin, async (req, res) => {
             }
             const account = accountDetails[0];
             
-            // 3. Check for sufficient balance
             if (account.balance < premium) {
                 await connection.rollback();
                 return res.status(400).json({ message: "Insufficient funds to pay first premium." });
             }
 
-            // 4. Debit the user's account
             await connection.query("UPDATE accounts SET balance = balance - ? WHERE account_id = ?", [premium, account.account_id]);
 
-            // 5. Record the insurance premium transaction
             const transactionSql = "INSERT INTO transactions (account_id, from_account, to_account, amount, type) VALUES (?, ?, ?, ?, 'insurance_premium')";
             await connection.query(transactionSql, [account.account_id, account.account_number, 'Bank', premium]);
-
-            // 6. Update insurance status
-          // ...
-await connection.query("UPDATE insurance SET status = 'approved' WHERE insurance_id = ?", [insuranceId]);
-// ...
-
-        } else if (action === "rejected") {
-            // Only update status for rejection
-            await connection.query("UPDATE insurance SET status = 'rejected' WHERE insurance_id = ?", [insuranceId]);
+            
+        } else if (action === "reject") {
+            newStatus = 'rejected';
         }
 
+        await connection.query("UPDATE insurance SET status = ? WHERE insurance_id = ?", [newStatus, insuranceId]);
+
         await connection.commit();
-        res.json({ message: `Insurance ${action}`, insuranceId });
+        res.json({ message: `Insurance application has been ${newStatus}`, insuranceId });
 
     } catch (err) {
         await connection.rollback();

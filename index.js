@@ -50,7 +50,7 @@ db.query('SELECT 1')
   });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}/register.html`);
+  console.log(`Server running on http://localhost:${PORT}/index.html`);
 });
 
 
