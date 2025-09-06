@@ -108,8 +108,9 @@ router.get("/admin/all", isAdmin, async (req, res) => {
 router.post("/admin/update", isAdmin, async (req, res) => {
     const { insuranceId, action } = req.body;
 
-    if (!insuranceId || !["activate", "reject"].includes(action)) {
-        return res.status(400).json({ message: "Invalid request: 'action' must be 'activate' or 'reject'" });
+    // only allow "approved" or "rejected"
+    if (!insuranceId || !["approved", "rejected"].includes(action)) {
+        return res.status(400).json({ message: "Invalid request: 'action' must be 'approved' or 'rejected'" });
     }
 
     const connection = await pool.getConnection();
@@ -117,46 +118,66 @@ router.post("/admin/update", isAdmin, async (req, res) => {
     try {
         await connection.beginTransaction();
 
-        const [insuranceDetails] = await connection.query("SELECT * FROM insurance WHERE insurance_id = ? FOR UPDATE", [insuranceId]);
+        const [insuranceDetails] = await connection.query(
+            "SELECT * FROM insurance WHERE insurance_id = ? FOR UPDATE",
+            [insuranceId]
+        );
+
         if (insuranceDetails.length === 0) {
             await connection.rollback();
             return res.status(404).json({ message: "Insurance application not found" });
         }
+
         const insurance = insuranceDetails[0];
 
-        if (insurance.status !== 'pending') {
+        if (insurance.status !== "pending") {
             await connection.rollback();
             return res.status(409).json({ message: `Insurance is already ${insurance.status}` });
         }
 
-        let newStatus = '';
-        if (action === "activate") {
-            newStatus = 'active';
+        let newStatus = "";
+
+        if (action === "approved") {
+            newStatus = "approved";
             const premium = parseFloat(insurance.premium);
             const userId = insurance.user_id;
 
-            const [accountDetails] = await connection.query("SELECT account_id, account_number, balance FROM accounts WHERE user_id = ? FOR UPDATE", [userId]);
+            const [accountDetails] = await connection.query(
+                "SELECT account_id, account_number, balance FROM accounts WHERE user_id = ? FOR UPDATE",
+                [userId]
+            );
+
             if (accountDetails.length === 0) {
                 await connection.rollback();
                 return res.status(404).json({ message: "User account not found" });
             }
+
             const account = accountDetails[0];
-            
+
             if (account.balance < premium) {
                 await connection.rollback();
                 return res.status(400).json({ message: "Insufficient funds to pay first premium." });
             }
 
-            await connection.query("UPDATE accounts SET balance = balance - ? WHERE account_id = ?", [premium, account.account_id]);
+            // deduct first premium
+            await connection.query(
+                "UPDATE accounts SET balance = balance - ? WHERE account_id = ?",
+                [premium, account.account_id]
+            );
 
-            const transactionSql = "INSERT INTO transactions (account_id, from_account, to_account, amount, type) VALUES (?, ?, ?, ?, 'insurance_premium')";
-            await connection.query(transactionSql, [account.account_id, account.account_number, 'Bank', premium]);
-            
-        } else if (action === "reject") {
-            newStatus = 'rejected';
+            // log transaction
+            const transactionSql =
+                "INSERT INTO transactions (account_id, from_account, to_account, amount, type) VALUES (?, ?, ?, ?, 'insurance_premium')";
+            await connection.query(transactionSql, [account.account_id, account.account_number, "Bank", premium]);
+
+        } else if (action === "rejected") {
+            newStatus = "rejected";
         }
 
-        await connection.query("UPDATE insurance SET status = ? WHERE insurance_id = ?", [newStatus, insuranceId]);
+        await connection.query(
+            "UPDATE insurance SET status = ? WHERE insurance_id = ?",
+            [newStatus, insuranceId]
+        );
 
         await connection.commit();
         res.json({ message: `Insurance application has been ${newStatus}`, insuranceId });
